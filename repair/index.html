@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<base target="_top">
+<style>
+/* ===== Webfont: Sarabun ===== */
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   DESIGN TOKENS — สหกรณ์ Confirmation Design System
+   ============================================================ */
+:root {
+  /* Paper / background ramp */
+  --paper-50:#f7f2eb; --paper-100:#f4efe7; --paper-200:#e6ddd2; --paper-300:#d6ddd9;
+  /* Pine green (primary) */
+  --pine-50:#e5f0ed; --pine-100:#d2e7e0; --pine-500:#25665b; --pine-700:#194940; --pine-900:#163f37;
+  /* Terracotta (danger) */
+  --clay-50:#f6ebe7; --clay-500:#b05d46;
+  /* Ochre (warning) */
+  --ochre-50:#f8f1e1; --ochre-500:#b3842c;
+  /* Ink ramp */
+  --ink-900:#1e2b28; --ink-700:#1b2826; --ink-500:#687571; --white:#ffffff;
+  /* Surfaces */
+  --surface:rgba(255,251,246,0.82); --surface-strong:#fffdf9; --surface-veil:rgba(255,255,255,0.66);
+  /* Hairlines */
+  --line:rgba(27,40,38,0.10); --line-strong:rgba(27,40,38,0.18); --line-glass:rgba(255,255,255,0.58);
+  /* Semantic aliases */
+  --bg:var(--paper-100); --bg-deep:var(--paper-200);
+  --text-body:var(--ink-900); --text-muted:var(--ink-500); --text-on-accent:var(--white);
+  --surface-card:var(--surface); --surface-inset:var(--surface-strong);
+  --accent:var(--pine-500); --accent-strong:var(--pine-700); --accent-soft:var(--pine-50); --accent-soft-2:var(--pine-100);
+  --danger:var(--clay-500); --danger-soft:var(--clay-50);
+  --warning:var(--ochre-500); --warning-soft:var(--ochre-50);
+  --success:var(--pine-500); --success-soft:var(--pine-50);
+  --border:var(--line); --border-strong:var(--line-strong);
+
+  /* Elevation */
+  --shadow:0 24px 50px rgba(29,44,39,0.10);
+  --shadow-soft:0 12px 28px rgba(29,44,39,0.06);
+  --shadow-accent:0 14px 26px rgba(37,102,91,0.22);
+  --shadow-accent-hover:0 18px 30px rgba(37,102,91,0.28);
+  --inset-top:inset 0 1px 0 rgba(255,255,255,0.75);
+  /* Glass */
+  --blur-glass:20px; --blur-veil:12px;
+  /* Focus ring */
+  --ring:0 0 0 5px rgba(37,102,91,0.08); --ring-border:rgba(37,102,91,0.35);
+  /* Brand gradients */
+  --grad-accent:linear-gradient(135deg,#25665b 0%,#194940 100%);
+  --grad-logo:linear-gradient(145deg,rgba(37,102,91,0.12),rgba(255,255,255,0.72));
+  --grad-tint-pine:linear-gradient(135deg,rgba(37,102,91,0.12),rgba(255,255,255,0.84));
+  --grad-tint-clay:linear-gradient(135deg,rgba(176,93,70,0.14),rgba(255,255,255,0.92));
+  /* Ambient app background */
+  --app-background:
+    radial-gradient(circle at top left,rgba(37,102,91,0.14),transparent 24%),
+    radial-gradient(circle at top right,rgba(176,93,70,0.12),transparent 22%),
+    linear-gradient(180deg,#f7f2eb 0%,#f4efe7 44%,#e6ddd2 100%);
+  --app-mesh:
+    linear-gradient(rgba(255,255,255,0.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.18) 1px,transparent 1px);
+  --app-mesh-size:34px 34px;
+  /* Motion */
+  --ease:cubic-bezier(0.4,0,0.2,1); --dur:0.24s; --lift:translateY(-2px);
+  --transition-base:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease),border-color var(--dur) var(--ease);
+
+  /* Typography */
+  --font-ui:"Sarabun","Noto Sans Thai",system-ui,sans-serif;
+  --font-doc:"Sarabun","TH Sarabun New",Tahoma,sans-serif;
+  --font-num:"Sarabun","Noto Sans Thai",sans-serif;
+  --fw-light:300; --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700; --fw-black:800;
+  --text-hero:clamp(2rem,5vw,3.5rem); --text-display:clamp(1.9rem,4vw,3.1rem);
+  --text-title:clamp(1.9rem,3vw,2.6rem); --text-h2:2rem; --text-h3:1.45rem;
+  --text-stat:clamp(1.4rem,3vw,2.25rem);
+  --text-lg:1.08rem; --text-base:1rem; --text-sm:0.92rem; --text-xs:0.88rem; --text-2xs:0.78rem;
+  --leading-tight:1.08; --leading-snug:1.2; --leading-normal:1.55; --leading-relaxed:1.75;
+  --tracking-hero:-0.04em; --tracking-tight:-0.03em; --tracking-snug:-0.02em; --tracking-eyebrow:0.08em;
+
+  /* Spacing & radii */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:18px;
+  --space-6:22px; --space-7:28px; --space-8:34px; --space-9:44px; --space-10:56px;
+  --pad-card:30px; --pad-panel:22px; --pad-chip:9px 14px; --pad-button:14px 20px;
+  --width-portal:1220px; --width-dashboard:1320px; --width-form:700px; --width-auth:450px;
+  --radius-xl:28px; --radius-lg:22px; --radius-md:16px; --radius-sm:12px; --radius-pill:999px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font-ui);color:var(--text-body);
+  background:var(--app-background);background-attachment:fixed;min-height:100vh;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;
+  background-image:var(--app-mesh);background-size:var(--app-mesh-size);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 38%,transparent 86%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 38%,transparent 86%);
+  pointer-events:none;
+}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(37,102,91,0.20);border-radius:999px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(37,102,91,0.34);background-clip:padding-box}
+input,textarea,select,button{font-family:inherit}
+input::placeholder,textarea::placeholder{color:var(--ink-500);opacity:.7}
+input:focus,textarea:focus,select:focus{border-color:var(--ring-border)!important;box-shadow:var(--ring)}
+@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes slideToast{from{opacity:0;transform:translateY(-14px) scale(.98)}to{opacity:1;transform:none}}
+
+/* Ambient orbs */
+.orb{position:fixed;border-radius:999px;filter:blur(14px);opacity:.6;z-index:0;pointer-events:none}
+.orb-tl{top:-180px;left:-160px;width:520px;height:520px;background:radial-gradient(circle,rgba(37,102,91,0.20),transparent 62%)}
+.orb-br{bottom:-220px;right:-180px;width:560px;height:560px;background:radial-gradient(circle,rgba(176,93,70,0.18),transparent 62%)}
+
+.hidden{display:none!important}
+
+/* Inputs */
+.field{width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:15px 16px;font-size:1rem;background:rgba(255,255,255,0.82);outline:none;color:var(--text-body);transition:var(--transition-base)}
+textarea.field{resize:vertical;line-height:var(--leading-normal)}
+select.field{cursor:pointer}
+.label{font-size:.9rem;color:var(--text-muted);font-weight:var(--fw-semibold)}
+
+/* Buttons */
+.btn-primary{border:0;border-radius:999px;background:var(--grad-accent);color:#fff;font-weight:var(--fw-bold);cursor:pointer;box-shadow:var(--shadow-accent);transition:var(--transition-base)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:var(--shadow-accent-hover)}
+.btn-primary:disabled{cursor:not-allowed;background:var(--paper-300);color:var(--ink-500);box-shadow:none;transform:none}
+.btn-ghost{border:1px solid var(--border);background:rgba(255,255,255,0.8);border-radius:999px;cursor:pointer;font-weight:var(--fw-semibold);color:var(--text-body);box-shadow:var(--shadow-soft);transition:var(--transition-base)}
+.btn-ghost:hover{background:#fff}
+
+/* Glass card */
+.glass{background:var(--surface);backdrop-filter:blur(var(--blur-glass));-webkit-backdrop-filter:blur(var(--blur-glass));border:1px solid var(--line-glass);border-radius:var(--radius-xl);box-shadow:var(--shadow)}
+.eyebrow{font-size:.72rem;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--accent);font-weight:var(--fw-bold)}
+
+/* Layout */
+#app{position:relative;z-index:1}
+.shell{display:flex;align-items:flex-start;min-height:100vh}
+aside.sidebar{position:sticky;top:0;align-self:flex-start;width:264px;flex:0 0 264px;height:100vh;overflow-y:auto;padding:26px 18px;display:flex;flex-direction:column;gap:22px;border-right:1px solid var(--line)}
+main.content{flex:1;min-width:0;max-width:1360px;padding:24px 36px 40px}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border-radius:var(--radius-md);padding:12px 14px;cursor:pointer;font-size:.96rem;font-weight:var(--fw-semibold);transition:var(--transition-base)}
+.nav-head{font-size:.7rem;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--ink-500);font-weight:var(--fw-semibold);padding:6px 14px 4px}
+
+@media (max-width:860px){
+  aside.sidebar{display:none}
+  main.content{padding:20px 16px 32px}
+}
+</style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+
+<div class="orb orb-tl" aria-hidden="true"></div>
+<div class="orb orb-br" aria-hidden="true"></div>
+
+<div id="app"></div>
+<div id="toast-el"></div>
+
+<script>
+/* ============================================================
+   GAS JSON API (หน้านี้โฮสต์บน GitHub Pages → เรียก GAS ผ่าน fetch)
+   ============================================================ */
+var API_URL = 'https://script.google.com/macros/s/AKfycbw1muK2LLk21bL14PCbJF1q3lMaDUw2BwpqMRswPaBaBBxqclxXtHEe1Hkmo9CPuVZh/exec';
+
+function _apiPayload(action, args){
+  switch (action){
+    case 'loginByLine':      return { lineUserId: args[0] };
+    case 'getAssetEntry':    return { assetId: args[0] };
+    case 'deleteDevice':     return { id: args[0] };
+    case 'getMyTickets':     return { lineUserId: args[0] };
+    case 'getTicketHistory': return { ticketId: args[0] };
+    case 'getAlerts':        return { role: args[0], department: args[1], lineUserId: args[2] };
+    default:                 return args[0] || {};
+  }
+}
+function _apiCall(action, args, onOk, onErr){
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: action, payload: _apiPayload(action, args) })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(j){ if (onOk) onOk(j); })
+  .catch(function(err){ if (onErr) onErr(err); });
+}
+/* Shim: ให้โค้ดเดิม google.script.run.<action>() วิ่งผ่าน fetch */
+var _API_ACTIONS = ['getBootData','loginByLine','getAssetEntry','createTicket','assignTicket',
+  'outsourceTicket','resolveTicket','getMyTickets','getAlerts','saveDevice','deleteDevice',
+  'submitLoan','getTicketHistory','ping'];
+function _makeRunner(){
+  var ok = null, err = null;
+  var runner = {
+    withSuccessHandler: function(f){ ok = f; return runner; },
+    withFailureHandler: function(f){ err = f; return runner; },
+  };
+  _API_ACTIONS.forEach(function(name){
+    runner[name] = function(){ _apiCall(name, Array.prototype.slice.call(arguments), ok, err); };
+  });
+  return runner;
+}
+var google = { script: { get run(){ return _makeRunner(); } } };
+
+/* asset ที่สแกนมาจาก QR (?asset= หรือใน liff.state) */
+function parseAssetParam(){
+  try {
+    var sp = new URLSearchParams(location.search);
+    if (sp.get('asset')) return sp.get('asset');
+    var st = sp.get('liff.state');
+    if (st){
+      var inner = new URLSearchParams(st.charAt(0) === '?' ? st.slice(1) : st);
+      if (inner.get('asset')) return inner.get('asset');
+    }
+  } catch (e){}
+  return '';
+}
+var ASSET_PARAM = parseAssetParam();
+
+/* ============================================================
+   LINE LIFF CONFIG
+   - ใส่ LIFF_ID เมื่อสร้าง LIFF เสร็จ → ใช้งานโหมด LINE จริง
+   - เว้นว่าง = โหมดสาธิต (เทสใน /dev / เบราว์เซอร์ปกติ)
+   ============================================================ */
+var LIFF_ID = '2009229714-ePEQuc3d';
+var LINE = { ready: false, userId: '', profile: null };
+function liffEnabled(){ return !!LIFF_ID && typeof liff !== 'undefined'; }
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var S = {
+  screen: 'dashboard',
+  loggedIn: false, username: '', password: '', loginError: '', loginLoading: false, displayName: '', role: '', department: '',
+  demoRole: 'admin',
+  lineUserId: '', booting: true, needRegister: false, noAccess: false,
+  scanAsset: '', scanAssetInfo: null, scanLoading: false,
+  alerts: [], alertDismissed: false,
+  resolveForm: { solution: '', parts: '', hours: '', vendorNote: '' },
+  category: '',
+  desc: '', attach: 0,
+  qrShow: true,
+  ticketFilter: 'all',
+  activeTicketId: 'JOB-2569-0142',
+  loanTab: 'new',
+  loanDevice: '', loanFrom: '', loanTo: '',
+  commentDraft: '',
+  comments: [
+    { who: 'ระบบ', when: '09:12', text: 'เปิดงานซ่อมอัตโนมัติจากการสแกน QR หน้างาน', tone: 'sys' },
+    { who: 'วิทยา (ช่าง)', when: '10:40', text: 'รับงานแล้ว กำลังตรวจสอบอาการเบื้องต้น', tone: 'tech' },
+  ],
+  deviceRegistry: [
+    { id: 'NB-00742', name: 'Notebook Dell Latitude 5440' },
+    { id: 'PR-00118', name: 'เครื่องพิมพ์ HP LaserJet M404' },
+    { id: 'SW-00031', name: 'Switch Cisco Catalyst 2960' },
+    { id: 'PC-00256', name: 'คอมพิวเตอร์ Lenovo ThinkCentre' },
+    { id: 'MN-00390', name: 'จอภาพ Samsung 24 นิ้ว' },
+  ],
+  devForm: { open: false, mode: 'add', editId: null, id: '', name: '', error: '' },
+  toast: null,
+  loading: true,          // true until backend boot data arrives
+  ticketsRaw: null,       // raw rows from the Sheet (null = use built-in mock)
+  loanRaw: null,
+};
+var _toastTimer = null;
+
+/* หน้านี้เรียก GAS ผ่าน fetch เสมอ (มี backend เสมอ) */
+function hasBackend(){ return true; }
+
+/* ============================================================
+   STATIC MOCK DATA
+   ============================================================ */
+var M = 'var(--ink-500)', W = 'var(--warning)', D = 'var(--danger)';
+
+function tone(k){
+  return ({
+    success:{ bg:'var(--accent-soft)', fg:'var(--accent-strong)', bd:'rgba(37,102,91,0.16)' },
+    warning:{ bg:'var(--warning-soft)', fg:'var(--warning)', bd:'rgba(179,132,44,0.18)' },
+    danger: { bg:'var(--danger-soft)', fg:'var(--danger)', bd:'rgba(176,93,70,0.18)' },
+  })[k];
+}
+
+/* Raw ticket rows (slaTone: 'muted'|'warning'|'danger'). Local fallback used
+   until Sheet data arrives via getBootData(). */
+var MOCK_TICKETS = [
+  { id:'JOB-2569-0142', dev:'NB-00742 · Notebook Dell Latitude 5440',   by:'สมหญิง การเงิน',  tech:'วิทยา ช่างเทคนิค', sla:'เกินกำหนด 1:30 ชม.', slaTone:'danger',  status:'กำลังซ่อม',     statusKey:'inprogress', place:'อาคาร 1 ชั้น 3 — ฝ่ายสินเชื่อ',  at:'24 มิ.ย. 2569 · 09:12', desc:'เครื่องเปิดไม่ติด กดปุ่ม power แล้วไฟกะพริบแต่จอไม่แสดงภาพ', solution:'', parts:'', work_hours:'', resolved_at:'' },
+  { id:'JOB-2569-0141', dev:'PR-00118 · เครื่องพิมพ์ HP LaserJet M404', by:'ธนา บัญชี',       tech:'—',                 sla:'เหลือ 5:30 ชม.',    slaTone:'muted',   status:'รอรับงาน',      statusKey:'pending',    place:'อาคาร 1 ชั้น 2 — ฝ่ายบัญชี',    at:'24 มิ.ย. 2569 · 09:12', desc:'กระดาษติดในเครื่องพิมพ์ ดึงออกไม่ได้',                        solution:'', parts:'', work_hours:'', resolved_at:'' },
+  { id:'JOB-2569-0140', dev:'SW-00031 · Switch Cisco Catalyst 2960',    by:'นิตยา บัญชี',     tech:'วิทยา ช่างเทคนิค', sla:'เหลือ 3:00 ชม.',    slaTone:'muted',   status:'ส่งบริษัทแล้ว', statusKey:'outsourced', place:'ห้อง Server ชั้น 4',              at:'24 มิ.ย. 2569 · 09:12', desc:'เน็ตหลุดทั้งชั้น สงสัย Switch มีปัญหา',                       solution:'ส่ง Cisco TAC', parts:'', work_hours:'', resolved_at:'' },
+  { id:'JOB-2569-0139', dev:'PC-00256 · คอมพิวเตอร์ Lenovo ThinkCentre',by:'อภิชาติ อำนวยการ',tech:'วิทยา ช่างเทคนิค', sla:'ภายในเวลา',         slaTone:'muted',   status:'ปิดงานแล้ว',    statusKey:'resolved',   place:'อาคาร 2 ชั้น 1 — งานทะเบียน',  at:'24 มิ.ย. 2569 · 09:12', desc:'เปิดไม่ติด มีเสียงบี๊บ',                                      solution:'เปลี่ยน RAM 1 แถว', parts:'RAM DDR4 8GB', work_hours:'2', resolved_at:'24 มิ.ย. 2569 · 14:00' },
+  { id:'JOB-2569-0138', dev:'MN-00390 · จอภาพ Samsung 24 นิ้ว',          by:'กมล สินเชื่อ',   tech:'วิทยา ช่างเทคนิค', sla:'ภายในเวลา',         slaTone:'muted',   status:'ปิดงานแล้ว',    statusKey:'resolved',   place:'อาคาร 1 ชั้น 1 — ประชาสัมพันธ์', at:'24 มิ.ย. 2569 · 09:12', desc:'หน้าจอดำ ไม่รับสัญญาณ',                                       solution:'เปลี่ยนสาย HDMI', parts:'สาย HDMI', work_hours:'1', resolved_at:'24 มิ.ย. 2569 · 11:30' },
+  { id:'JOB-2569-0137', dev:'UP-00055 · UPS APC Smart-UPS 3kVA',        by:'ปรียา อำนวยการ',  tech:'—',                 sla:'เหลือ 8:00 ชม.',    slaTone:'muted',   status:'รอรับงาน',      statusKey:'pending',    place:'ห้อง Server ชั้น 4',              at:'24 มิ.ย. 2569 · 09:12', desc:'UPS ส่งเสียงดังผิดปกติ สลับไฟบ่อย',                           solution:'', parts:'', work_hours:'', resolved_at:'' },
+  { id:'JOB-2569-0136', dev:'FW-00009 · Firewall FortiGate 60F',        by:'ระบบอัตโนมัติ',   tech:'วิทยา ช่างเทคนิค', sla:'เหลือ 1:05 ชม.',    slaTone:'warning', status:'กำลังซ่อม',     statusKey:'inprogress', place:'ห้อง Server ชั้น 4',              at:'24 มิ.ย. 2569 · 09:12', desc:'Firewall ไม่ตอบสนอง อินเทอร์เน็ตใช้ไม่ได้ทั้งองค์กร',         solution:'', parts:'', work_hours:'', resolved_at:'' },
+  { id:'JOB-2569-0135', dev:'NB-00735 · Notebook HP ProBook 450',       by:'สุดา บุคคล',      tech:'วิทยา ช่างเทคนิค', sla:'ภายในเวลา',         slaTone:'muted',   status:'ปิดงานแล้ว',    statusKey:'resolved',   place:'อาคาร 2 ชั้น 3 — ฝ่ายบุคคล',    at:'24 มิ.ย. 2569 · 09:12', desc:'พัดลมดังมาก เครื่องร้อน',                                     solution:'เปลี่ยนพัดลม CPU', parts:'Fan CPU', work_hours:'2', resolved_at:'24 มิ.ย. 2569 · 13:00' },
+  { id:'JOB-2569-0134', dev:'AP-00021 · Access Point Ubiquiti U6',      by:'วิชัย สมาชิก',    tech:'—',                 sla:'เหลือ 12:00 ชม.',   slaTone:'muted',   status:'รอรับงาน',      statusKey:'pending',    place:'อาคาร 1 ชั้น 5',                  at:'24 มิ.ย. 2569 · 09:12', desc:'Wi-Fi ช้ามาก ใช้งานไม่ได้ในบริเวณชั้น 5',                     solution:'', parts:'', work_hours:'', resolved_at:'' },
+];
+
+function slaColorFor(t){ return t === 'danger' ? D : (t === 'warning' ? W : M); }
+
+/* Decorate a raw ticket row with presentation values (colors, badge tones). */
+function decorateTicket(t){
+  var sc = slaColorFor(t.slaTone);
+  var tk = (t.statusKey === 'pending' || t.statusKey === 'outsourced') ? 'warning' : (t.slaTone === 'danger' ? 'danger' : 'success');
+  var tn = tone(tk);
+  return { id:t.id, dev:t.dev, by:t.by, tech:t.tech, sla:t.sla, slaColor:sc, status:t.status,
+           statusKey:t.statusKey, place:t.place, at:t.at || '21 มิ.ย. 2569 · 09:12',
+           requester_id:t.requester_id || '', phone:t.phone || '',
+           desc:t.desc || '', solution:t.solution || '', parts:t.parts || '', work_hours:t.work_hours || '', resolved_at:t.resolved_at || '',
+           bg:tn.bg, fg:tn.fg, bd:tn.bd };
+}
+
+function allTickets(){
+  var raw = (S.ticketsRaw && S.ticketsRaw.length) ? S.ticketsRaw : MOCK_TICKETS;
+  return raw.map(decorateTicket);
+}
+
+var KB = [
+  { t:'วิธีแก้ Notebook เปิดไม่ติด / ไฟไม่เข้า', meta:'ฮาร์ดแวร์ • อ่าน 1,240 ครั้ง' },
+  { t:'เครื่องพิมพ์ HP ขึ้น Error E0 หรือกระดาษติด', meta:'อุปกรณ์ต่อพ่วง • อ่าน 980 ครั้ง' },
+  { t:'รีเซ็ตการตั้งค่าเครือข่ายบน Windows 11', meta:'เครือข่าย • อ่าน 2,310 ครั้ง' },
+];
+
+var TIMELINE = [
+  { when:'21 มิ.ย. 2569 · 09:12', title:'เปิดงานซ่อมอัตโนมัติ', desc:'สร้างจากการสแกน QR หน้างาน', color:'var(--accent)' },
+  { when:'21 มิ.ย. 2569 · 10:40', title:'มอบหมายและรับงาน', desc:'วิทยา (ช่าง) รับผิดชอบงานนี้', color:'var(--accent)' },
+  { when:'21 มิ.ย. 2569 · 11:15', title:'วินิจฉัยอาการเบื้องต้น', desc:'ตรวจพบหน่วยความจำ (RAM) เสีย 1 แถว', color:'var(--warning)' },
+  { when:'กำลังดำเนินการ', title:'รออะไหล่ทดแทน', desc:'เบิกอะไหล่จากคลัง คาดได้รับ 22 มิ.ย.', color:'var(--warning)' },
+  { when:'คาดเสร็จ 22 มิ.ย. 2569', title:'ติดตั้งและทดสอบ', desc:'ยังไม่เริ่มดำเนินการ', color:'rgba(104,117,113,0.45)' },
+];
+
+var FREE_DEVICES = [
+  { id:'NB-00755', label:'NB-00755 · Notebook Lenovo ThinkPad (สำรอง)' },
+  { id:'PJ-00012', label:'PJ-00012 · โปรเจกเตอร์ Epson EB-X51' },
+  { id:'CM-00008', label:'CM-00008 · กล้อง Logitech BRIO' },
+  { id:'NB-00760', label:'NB-00760 · Notebook Dell (สำรอง)' },
+];
+
+var MOCK_LOANS = [
+  { dev:'โปรเจกเตอร์ Epson EB-X51', by:'ฝ่ายสินเชื่อ', from:'18 มิ.ย.', to:'20 มิ.ย.', status:'อนุมัติแล้ว', tone:'success' },
+  { dev:'Notebook Lenovo (สำรอง)', by:'ฝ่ายบัญชี', from:'12 มิ.ย.', to:'19 มิ.ย.', status:'เกินกำหนดคืน', tone:'danger' },
+  { dev:'กล้อง Logitech BRIO', by:'ฝ่ายประชาสัมพันธ์', from:'21 มิ.ย.', to:'25 มิ.ย.', status:'รออนุมัติ', tone:'warning' },
+  { dev:'UPS สำรอง 1kVA', by:'ห้อง Server', from:'05 มิ.ย.', to:'05 ก.ค.', status:'อนุมัติแล้ว', tone:'success' },
+];
+
+function loanHistory(){
+  var raw = (S.loanRaw && S.loanRaw.length) ? S.loanRaw : MOCK_LOANS;
+  return raw.map(function(l){ var tn = tone(l.tone || 'warning'); return { dev:l.dev, by:l.by, from:l.from, to:l.to, status:l.status, bg:tn.bg, fg:tn.fg, bd:tn.bd }; });
+}
+
+var CATEGORIES = [
+  { key:'system',  th:'ระบบ',      en:'System',    desc:'ซอฟต์แวร์ / ระบบงาน / บัญชีผู้ใช้',
+    icon:'<circle cx="12" cy="12" r="3.1"/><path d="M12 2.6v2.5M12 18.9v2.5M21.4 12h-2.5M5.1 12H2.6M18.66 5.34l-1.77 1.77M7.11 16.89l-1.77 1.77M18.66 18.66l-1.77-1.77M7.11 7.11 5.34 5.34"/>' },
+  { key:'device',  th:'อุปกรณ์',   en:'Equipment', desc:'คอมพิวเตอร์ / เครื่องพิมพ์ / ฮาร์ดแวร์',
+    icon:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8.5 20h7M12 16v4"/>' },
+  { key:'network', th:'เครือข่าย', en:'Network',   desc:'อินเทอร์เน็ต / Wi-Fi / Switch',
+    icon:'<path d="M2.6 8.7a14 14 0 0 1 18.8 0"/><path d="M5.7 12.1a9.6 9.6 0 0 1 12.6 0"/><path d="M8.8 15.5a5.1 5.1 0 0 1 6.4 0"/><circle cx="12" cy="18.8" r="0.9" fill="currentColor" stroke="none"/>' },
+  { key:'other',   th:'อื่นๆ',     en:'Other',     desc:'อาคารสถานที่ / นอกเหนือหมวดข้างต้น',
+    icon:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/>' },
+];
+
+/* 6-month repair trend (matches dashboard summary: 182 total) */
+var TREND = [
+  { m:'ม.ค.', v:24 }, { m:'ก.พ.', v:31 }, { m:'มี.ค.', v:28 },
+  { m:'เม.ย.', v:35 }, { m:'พ.ค.', v:33 }, { m:'มิ.ย.', v:31 },
+];
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function setState(patch){
+  if (typeof patch === 'function') patch = patch(S);
+  for (var k in patch) S[k] = patch[k];
+  render();
+}
+
+function toastMsg(text){
+  clearTimeout(_toastTimer);
+  S.toast = text; renderToast();
+  _toastTimer = setTimeout(function(){ S.toast = null; renderToast(); }, 4200);
+}
+
+/* ============================================================
+   QR matrix (deterministic from device id) — drawn with divs
+   ============================================================ */
+function buildMatrix(seed){
+  var h = 0, i;
+  for (i = 0; i < seed.length; i++) h = (h * 131 + seed.charCodeAt(i)) >>> 0;
+  var rnd = function(){ h = (h * 1103515245 + 12345) & 0x7fffffff; return h / 0x7fffffff; };
+  var N = 13, dark = '#163f37';
+  var g = [], r, c;
+  for (r = 0; r < N; r++){ g.push([]); for (c = 0; c < N; c++) g[r].push(0); }
+  var finder = function(r0, c0){
+    for (var rr = 0; rr < 5; rr++) for (var cc = 0; cc < 5; cc++){
+      var edge = rr === 0 || rr === 4 || cc === 0 || cc === 4;
+      g[r0+rr][c0+cc] = (edge || (rr === 2 && cc === 2)) ? 1 : 0;
+    }
+  };
+  finder(0,0); finder(0,N-5); finder(N-5,0);
+  var inF = function(r,c){ return (r<5&&c<5)||(r<5&&c>=N-5)||(r>=N-5&&c<5); };
+  for (r = 0; r < N; r++) for (c = 0; c < N; c++) if (!inF(r,c)) g[r][c] = rnd() > 0.52 ? 1 : 0;
+  var html = '';
+  for (r = 0; r < N; r++) for (c = 0; c < N; c++)
+    html += '<div style="background:' + (g[r][c] ? dark : 'transparent') + '"></div>';
+  return html;
+}
+
+/* ============================================================
+   LINE CHART (inline SVG, no library)
+   ============================================================ */
+function lineChart(height){
+  var w = 760, h = height || 260, padL = 36, padR = 18, padT = 18, padB = 30;
+  var vals = TREND.map(function(t){ return t.v; });
+  var max = Math.max.apply(null, vals) * 1.15, min = 0;
+  var iw = w - padL - padR, ih = h - padT - padB;
+  var xAt = function(i){ return padL + (iw * i / (TREND.length - 1)); };
+  var yAt = function(v){ return padT + ih - ((v - min) / (max - min)) * ih; };
+  var pts = TREND.map(function(t, i){ return xAt(i) + ',' + yAt(t.v); });
+  var line = 'M' + pts.join(' L');
+  var area = line + ' L' + xAt(TREND.length-1) + ',' + (padT+ih) + ' L' + xAt(0) + ',' + (padT+ih) + ' Z';
+  var grid = '', g, gy, gv;
+  for (g = 0; g <= 4; g++){
+    gv = max * g / 4; gy = yAt(gv);
+    grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+(w-padR)+'" y2="'+gy+'" stroke="rgba(27,40,38,0.07)" stroke-width="1"/>';
+    grid += '<text x="'+(padL-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="11" fill="var(--ink-500)">'+Math.round(gv)+'</text>';
+  }
+  var dots = '', labels = '';
+  TREND.forEach(function(t, i){
+    dots += '<circle cx="'+xAt(i)+'" cy="'+yAt(t.v)+'" r="4.5" fill="#fff" stroke="var(--accent)" stroke-width="2.5"/>';
+    labels += '<text x="'+xAt(i)+'" y="'+(h-9)+'" text-anchor="middle" font-size="12" fill="var(--ink-500)">'+t.m+'</text>';
+  });
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="xMidYMid meet" style="display:block">'
+    + '<defs><linearGradient id="lcArea" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="rgba(37,102,91,0.22)"/><stop offset="100%" stop-color="rgba(37,102,91,0)"/></linearGradient></defs>'
+    + grid
+    + '<path d="'+area+'" fill="url(#lcArea)"/>'
+    + '<path d="'+line+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
+    + dots + labels + '</svg>';
+}
+
+/* ============================================================
+   RENDER ENTRY
+   ============================================================ */
+function render(){
+  var app = document.getElementById('app');
+  if (!S.loggedIn){ app.innerHTML = viewLogin(); return; }
+  app.innerHTML = viewApp();
+}
+
+function renderToast(){
+  var el = document.getElementById('toast-el');
+  if (!S.toast){ el.innerHTML = ''; return; }
+  el.innerHTML =
+    '<div style="position:fixed;top:24px;right:24px;z-index:80;display:flex;align-items:center;gap:14px;max-width:380px;padding:16px 20px;animation:slideToast .3s var(--ease) both" class="glass">'
+    + '<div style="width:38px;height:38px;flex:0 0 auto;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:1.1rem">✓</div>'
+    + '<div style="flex:1"><div style="font-weight:var(--fw-bold);font-size:.94rem">สำเร็จ</div>'
+    + '<div style="font-size:.84rem;color:var(--text-muted)">'+esc(S.toast)+'</div></div>'
+    + '<button onclick="dismissToast()" style="border:0;background:transparent;color:var(--ink-500);cursor:pointer;font-size:1.1rem;line-height:1">×</button></div>';
+}
+function dismissToast(){ clearTimeout(_toastTimer); S.toast = null; renderToast(); }
+
+/* ============================================================
+   AUTH GATE — แสดงระหว่าง LIFF init / ต้องลงทะเบียน / โหมดสาธิต
+   ============================================================ */
+var DEMO_USERS = {
+  admin: { name:'สมชาย (หัวหน้าสารสนเทศ)', role:'admin', department:'สารสนเทศ', userId:'demo-admin' },
+  tech:  { name:'วิทยา (จนท.สารสนเทศ)',    role:'tech',  department:'สารสนเทศ', userId:'demo-tech'  },
+  staff: { name:'สมหญิง การเงิน',          role:'staff', department:'การเงิน',  userId:'demo-staff' },
+};
+
+function authShell(inner){
+  return ''
+  + '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">'
+  +   '<div style="width:100%;max-width:430px;animation:riseIn .6s var(--ease) both">'
+  +     '<div style="text-align:center;margin-bottom:26px">'
+  +       '<div style="width:72px;height:72px;margin:0 auto 16px;border-radius:20px;background:var(--grad-accent);box-shadow:var(--shadow-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:1.4rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.4),transparent 60%)"></span><span style="position:relative">IT</span></div>'
+  +       '<h1 style="margin:0;font-size:1.6rem;font-weight:var(--fw-black);letter-spacing:var(--tracking-tight)">ระบบแจ้งซ่อม IT</h1>'
+  +       '<p style="margin:5px 0 0;color:var(--text-muted);font-size:.95rem">สอ.กรมวิชาการเกษตร จำกัด</p>'
+  +     '</div>' + inner
+  +   '</div>'
+  + '</div>';
+}
+
+/* หน้ารอ LIFF init */
+function viewBooting(){
+  return authShell('<div class="glass" style="padding:40px;text-align:center;color:var(--text-muted)">'
+    + '<div style="font-size:1.6rem;margin-bottom:10px">⏳</div>กำลังเชื่อมต่อ LINE…</div>');
+}
+
+/* หน้าต้องลงทะเบียนก่อน (LINE ID ไม่พบในระบบลงทะเบียน) */
+function viewNeedRegister(){
+  return authShell('<div class="glass" style="padding:32px;text-align:center;display:flex;flex-direction:column;gap:16px">'
+    + '<div style="font-size:2rem">📝</div>'
+    + '<h2 style="margin:0;font-size:1.3rem;font-weight:var(--fw-bold)">ยังไม่ได้ลงทะเบียน</h2>'
+    + '<p style="margin:0;color:var(--text-muted);font-size:.92rem;line-height:1.6">บัญชี LINE ของคุณยังไม่อยู่ในระบบลงทะเบียน กรุณาลงทะเบียนก่อนใช้งานระบบแจ้งซ่อม</p>'
+    + '<button class="btn-primary" style="padding:15px;font-size:1rem" onclick="goRegister()">ไปหน้าลงทะเบียน</button>'
+    + '</div>');
+}
+function goRegister(){
+  /* TODO: เปลี่ยนเป็น LIFF URL ของหน้าลงทะเบียนเดิม */
+  toastMsg('กรุณาลงทะเบียนผ่านระบบ LINE ที่องค์กรกำหนด');
+}
+
+/* หน้าไม่มีสิทธิ์เข้าใช้ */
+function viewNoAccess(){
+  return authShell('<div class="glass" style="padding:32px;text-align:center;display:flex;flex-direction:column;gap:14px">'
+    + '<div style="font-size:2rem">🚫</div>'
+    + '<h2 style="margin:0;font-size:1.3rem;font-weight:var(--fw-bold)">ไม่มีสิทธิ์เข้าใช้</h2>'
+    + '<p style="margin:0;color:var(--text-muted);font-size:.92rem">บัญชีของคุณไม่มีสิทธิ์เข้าใช้ระบบแจ้งซ่อม</p></div>');
+}
+
+/* โหมดสาธิต: เลือก role เพื่อทดสอบ (เมื่อไม่มี LIFF_ID) */
+function viewLogin(){
+  if (S.booting && liffEnabled()) return viewBooting();
+  if (S.needRegister) return viewNeedRegister();
+  if (S.noAccess)     return viewNoAccess();
+
+  var pick = function(k, label, sub){
+    var on = S.demoRole === k;
+    return '<button onclick="S.demoRole=\''+k+'\';render()" style="text-align:left;border:1.5px solid '+(on?'var(--accent)':'var(--border)')+';background:'+(on?'var(--grad-tint-pine)':'rgba(255,255,255,0.7)')+';border-radius:var(--radius-md);padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:12px">'
+      + '<span style="width:18px;height:18px;border-radius:999px;border:2px solid '+(on?'var(--accent)':'var(--line-strong)')+';background:'+(on?'var(--accent)':'transparent')+';flex:0 0 auto"></span>'
+      + '<span><span style="display:block;font-weight:var(--fw-bold);font-size:.96rem;color:'+(on?'var(--accent-strong)':'var(--ink-900)')+'">'+esc(label)+'</span><span style="display:block;font-size:.8rem;color:var(--text-muted)">'+esc(sub)+'</span></span></button>';
+  };
+
+  return authShell('<div class="glass" style="padding:32px">'
+    + '<div class="eyebrow">DEMO MODE · เลือกบทบาทเพื่อทดสอบ</div>'
+    + '<h2 style="margin:6px 0 18px;font-size:1.35rem;font-weight:var(--fw-bold)">เข้าสู่ระบบ (สาธิต)</h2>'
+    + '<div style="display:flex;flex-direction:column;gap:10px">'
+    + pick('admin','หัวหน้าฝ่ายสารสนเทศ','admin · เห็นทุกงาน + ตรวจสอบย้อนหลัง')
+    + pick('tech','เจ้าหน้าที่สารสนเทศ','tech · รับงาน/ซ่อม/ส่งบริษัท/ปิดงาน')
+    + pick('staff','พนักงานทั่วไป (ผู้แจ้ง)','staff · แจ้งซ่อม + ติดตามงานของตัวเอง')
+    + '</div>'
+    + '<button class="btn-primary" style="margin-top:18px;width:100%;font-size:1.02rem;padding:15px" onclick="doDemoLogin()">เข้าสู่ระบบ</button>'
+    + '<p style="margin:14px 0 0;font-size:.78rem;color:var(--text-muted);text-align:center">โหมดจริงจะระบุตัวตนผ่าน LINE อัตโนมัติ (ตั้งค่า LIFF_ID)</p>'
+    + '</div>');
+}
+
+function doDemoLogin(){
+  var u = DEMO_USERS[S.demoRole] || DEMO_USERS.admin;
+  setState({ loggedIn:true, displayName:u.name, role:u.role, department:u.department,
+             lineUserId:u.userId, screen:'dashboard', alertDismissed:false });
+  if (ASSET_PARAM) routeScan(ASSET_PARAM);
+  loadDemoAlerts();
+}
+
+function loadDemoAlerts(){
+  if (S.role === 'staff')
+    S.alerts = [{ type:'update', count:1, msg:'งานซ่อมของคุณ 1 รายการ มีการอัปเดตสถานะ' }];
+  else
+    S.alerts = [
+      { type:'pending',    count:3, msg:'มีงานแจ้งซ่อมรอรับงาน 3 รายการ' },
+      { type:'outsourced', count:1, msg:'งานที่ส่งบริษัท 1 รายการ รอปิดงาน' },
+    ];
+  renderToast();
+}
+
+function logout(){
+  if (liffEnabled() && liff.isLoggedIn()) { try { liff.logout(); } catch(e){} }
+  setState({ loggedIn:false, displayName:'', role:'', department:'', lineUserId:'', alerts:[], alertDismissed:false, needRegister:false, noAccess:false });
+}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+var ROLE_LABEL = { admin:'ผู้ดูแลระบบ', tech:'เจ้าหน้าที่ช่าง', staff:'เจ้าหน้าที่ IT' };
+var PAGE_TITLE = { dashboard:'ภาพรวมระบบแจ้งซ่อม', report:'แจ้งซ่อมอุปกรณ์', tickets:'รายการงานซ่อม', detail:'รายละเอียดงานซ่อม', loans:'ยืม–คืนอุปกรณ์', qr:'QR Code อุปกรณ์', pm:'แผนบำรุงรักษา (PM)', mobile:'สแกนด่วน (มือถือ)', mytickets:'งานซ่อมของฉัน' };
+var PAGE_SUB = { dashboard:'สรุปงานซ่อม สถานะ SLA และกิจกรรมล่าสุด', report:'กรอกรายละเอียดเพื่อเปิดงานซ่อมใหม่ ระบบจะออกหมายเลขงานให้อัตโนมัติ', tickets:'ติดตามและกรองงานซ่อมทั้งหมดตามสถานะ', detail:'ข้อมูลอุปกรณ์ สถานะ SLA และกิจกรรมของงาน', loans:'ขอยืมอุปกรณ์ที่ว่าง และดูประวัติการยืม', qr:'พิมพ์ QR ติดอุปกรณ์ เพื่อสแกนแจ้งซ่อมหน้างาน', pm:'ตารางรอบบำรุงรักษาอุปกรณ์ประจำเดือน', mobile:'ตัวอย่างหน้าจอมือถือ สแกน QR แล้วแจ้งซ่อมด่วน', mytickets:'ติดตามสถานะงานซ่อมที่คุณแจ้ง', scan:'แจ้งซ่อมจากการสแกน QR' };
+PAGE_TITLE.scan = 'แจ้งซ่อมอุปกรณ์';
+
+function navBtn(key, label){
+  var on = S.screen === key || (key === 'tickets' && S.screen === 'detail');
+  var st = on
+    ? 'background:var(--grad-tint-pine);color:var(--accent-strong);border:1px solid rgba(37,102,91,0.20)'
+    : 'background:transparent;color:var(--ink-700);border:1px solid transparent';
+  var dot = on ? 'var(--accent)' : 'rgba(104,117,113,0.4)';
+  return '<button class="nav-btn" style="'+st+'" onclick="go(\''+key+'\')">'
+    + '<span style="width:9px;height:9px;border-radius:999px;background:'+dot+';flex:0 0 auto"></span>'+esc(label)+'</button>';
+}
+function go(key){ setState({ screen:key }); window.scrollTo(0,0); }
+
+function viewApp(){
+  var body;
+  switch (S.screen){
+    case 'dashboard': body = viewDashboard(); break;
+    case 'report':    body = viewReport(); break;
+    case 'tickets':   body = viewTickets(); break;
+    case 'detail':    body = viewDetail(); break;
+    case 'loans':     body = viewLoans(); break;
+    case 'qr':        body = viewQr(); break;
+    case 'pm':        body = viewPm(); break;
+    case 'mobile':    body = viewMobile(); break;
+    case 'mytickets': body = viewMyTickets(); break;
+    case 'scan':      body = viewScanLanding(); break;
+    default:          body = viewDashboard();
+  }
+  return ''
+  + '<div class="shell">'
+  +   '<aside class="sidebar">'
+  +     '<div style="display:flex;align-items:center;gap:13px;padding:0 8px">'
+  +       '<div style="width:46px;height:46px;flex:0 0 auto;border-radius:15px;background:var(--grad-accent);box-shadow:var(--shadow-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.92rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.4),transparent 60%)"></span><span style="position:relative">IT</span></div>'
+  +       '<div style="line-height:1.2"><div style="font-weight:var(--fw-bold);font-size:1rem;letter-spacing:var(--tracking-snug)">ระบบแจ้งซ่อม IT</div><div style="font-size:.74rem;color:var(--text-muted)">สอ.กรมวิชาการเกษตร</div></div>'
+  +     '</div>'
+  +     '<nav style="display:flex;flex-direction:column;gap:4px">'
+  +       '<div class="nav-head">เมนูหลัก</div>'
+  +       navBtn('dashboard','แดชบอร์ด') + navBtn('report','แจ้งซ่อม')
+  + (S.role === 'staff' ? navBtn('mytickets','งานซ่อมของฉัน') : navBtn('tickets','รายการงานซ่อม'))
+  + navBtn('loans','ยืม–คืนอุปกรณ์')
+  +       '<div class="nav-head" style="padding-top:16px">เครื่องมือ</div>'
+  +       navBtn('qr','QR Code อุปกรณ์') + navBtn('pm','แผนบำรุงรักษา (PM)') + navBtn('mobile','สแกนด่วน (มือถือ)')
+  +     '</nav>'
+  +     '<div style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--radius-md);background:var(--surface-veil);border:1px solid var(--line)">'
+  +       '<div style="width:38px;height:38px;flex:0 0 auto;border-radius:999px;background:var(--grad-tint-pine);border:1px solid rgba(37,102,91,0.18);display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);color:var(--accent-strong)">ก</div>'
+  +       '<div style="line-height:1.25;min-width:0"><div style="font-weight:var(--fw-semibold);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(S.displayName||'เจ้าหน้าที่ IT')+'</div><div style="font-size:.74rem;color:var(--text-muted)">'+esc(ROLE_LABEL[S.role]||'ผู้ใช้งาน')+' • ออนไลน์</div></div>'
+  +       '<button onclick="logout()" style="margin-left:auto;flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,0.7);border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--text-body)">ออก</button>'
+  +     '</div>'
+  +   '</aside>'
+  +   '<main class="content">'
+  +     viewAlertBanner()
+  +     '<header style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:26px">'
+  +       '<div><div class="eyebrow" style="margin-bottom:7px">IT HELPDESK · 21 มิ.ย. 2569</div>'
+  +       '<h1 style="margin:0;font-size:var(--text-title);font-weight:var(--fw-black);letter-spacing:var(--tracking-hero);line-height:var(--leading-tight)">'+esc(PAGE_TITLE[S.screen])+'</h1>'
+  +       '<p style="margin:8px 0 0;color:var(--text-muted);font-size:1.02rem">'+esc(PAGE_SUB[S.screen])+'</p></div>'
+  +     '</header>'
+  +     body
+  +   '</main>'
+  + '</div>';
+}
+
+/* ============================================================
+   DASHBOARD (ภาพรวม)
+   ============================================================ */
+function statCard(grad, label, value, foot, footColor){
+  return '<div style="position:relative;overflow:hidden;background:'+grad+';border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:22px">'
+    + '<span style="color:var(--text-muted);font-size:.92rem">'+esc(label)+'</span>'
+    + '<strong style="display:block;margin-top:8px;font-size:var(--text-stat);font-weight:var(--fw-black);letter-spacing:var(--tracking-hero)">'+esc(value)+'</strong>'
+    + '<span style="display:block;margin-top:8px;font-size:.84rem;color:'+footColor+';font-weight:var(--fw-semibold)">'+esc(foot)+'</span></div>';
+}
+
+function viewDashboard(){
+  var tk = allTickets().slice(0,5);
+  var rows = tk.map(function(t){
+    return '<div style="display:grid;grid-template-columns:1.15fr 1.7fr 1fr 1.15fr 1.1fr 1fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem">'
+      + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
+      + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.by)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.tech)+'</span>'
+      + '<span style="color:'+t.slaColor+';font-weight:var(--fw-semibold);font-size:.85rem">'+esc(t.sla)+'</span>'
+      + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
+  }).join('');
+
+  return '<section style="animation:riseIn .6s var(--ease) both"><div style="display:flex;flex-direction:column;gap:22px">'
+  + '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">'
+  +   statCard('linear-gradient(135deg,rgba(229,240,237,0.92),rgba(255,255,255,0.84))','งานที่เปิดอยู่','18','+3 จากสัปดาห์ก่อน','var(--accent-strong)')
+  +   statCard('linear-gradient(135deg,rgba(218,236,229,0.92),rgba(255,255,255,0.84))','SLA Achievement','92%','เป้าหมาย 90% · ทำได้ตามเป้า','var(--text-muted)')
+  +   statCard('linear-gradient(135deg,rgba(250,244,231,0.92),rgba(255,255,255,0.84))','ยืม–คืนค้างอยู่','5','เกินกำหนดคืน 1 รายการ','var(--warning)')
+  +   statCard('linear-gradient(135deg,rgba(247,236,231,0.92),rgba(255,255,255,0.84))','สัญญาใกล้หมดอายุ','3','ภายใน 30 วัน','var(--danger)')
+  + '</div>'
+  + '<div class="glass" style="padding:26px 28px">'
+  +   '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap">'
+  +     '<div><div class="eyebrow">TREND · 6 เดือน</div><h2 style="margin:6px 0 0;font-size:var(--text-h3);font-weight:var(--fw-bold)">แนวโน้มงานซ่อม</h2></div>'
+  +     '<div style="display:flex;gap:18px;font-size:.84rem;color:var(--text-muted)"><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">182</strong> งานรวม</span><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">30.3</strong> เฉลี่ย/เดือน</span></div>'
+  +   '</div>'
+  +   '<div style="margin-top:8px">'+lineChart(260)+'</div>'
+  + '</div>'
+  + '<div class="glass" style="padding:26px 28px">'
+  +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h2 style="margin:0;font-size:var(--text-h3);font-weight:var(--fw-bold)">งานซ่อมล่าสุด</h2><span style="font-size:.86rem;color:var(--accent);font-weight:var(--fw-semibold);cursor:pointer" onclick="go(\'tickets\')">ดูทั้งหมด →</span></div>'
+  +   '<div style="overflow-x:auto"><div style="min-width:760px">'
+  +     '<div style="display:grid;grid-template-columns:1.15fr 1.7fr 1fr 1.15fr 1.1fr 1fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span>SLA</span><span style="text-align:right">สถานะ</span></div>'
+  +     rows
+  +   '</div></div>'
+  + '</div>'
+  + '</div></section>';
+}
+
+/* ============================================================
+   REPORT FORM (มาตรฐาน)
+   ============================================================ */
+function viewReport(){
+  var canSubmit = !!S.category && S.desc.trim().length > 0;
+  var cards = CATEGORIES.map(function(m){
+    var on = S.category === m.key;
+    var bg = on ? 'var(--grad-tint-pine)' : 'rgba(255,255,255,0.7)';
+    var bd = on ? 'rgba(37,102,91,0.34)' : 'var(--border)';
+    var sh = on ? '0 14px 28px rgba(29,44,39,0.10)' : 'var(--shadow-soft)';
+    var tileBg = on ? 'var(--accent)' : 'var(--accent-soft)';
+    var tileBd = on ? 'var(--accent)' : 'rgba(37,102,91,0.16)';
+    var iconColor = on ? '#fff' : 'var(--accent-strong)';
+    var titleColor = on ? 'var(--accent-strong)' : 'var(--ink-900)';
+    var ringBorder = on ? 'var(--accent)' : 'var(--line-strong)';
+    var ringBg = on ? 'var(--accent)' : 'transparent';
+    return '<button onclick="pickCategory(\''+m.key+'\')" style="text-align:center;border:1.5px solid '+bd+';background:'+bg+';box-shadow:'+sh+';border-radius:var(--radius-lg);padding:20px 16px 18px;cursor:pointer;transition:var(--transition-base);display:flex;flex-direction:column;align-items:center;gap:12px;position:relative">'
+      + '<span style="position:absolute;top:13px;right:13px;width:20px;height:20px;border-radius:999px;border:2px solid '+ringBorder+';background:'+ringBg+';display:flex;align-items:center;justify-content:center"><span style="width:7px;height:7px;border-radius:999px;background:#fff;opacity:'+(on?1:0)+'"></span></span>'
+      + '<span style="width:56px;height:56px;flex:0 0 auto;border-radius:18px;background:'+tileBg+';border:1px solid '+tileBd+';display:flex;align-items:center;justify-content:center;color:'+iconColor+';transition:var(--transition-base)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg></span>'
+      + '<span style="min-width:0"><span style="display:block;font-weight:var(--fw-bold);font-size:1rem;color:'+titleColor+'">'+esc(m.th)+'</span>'
+      + '<span style="display:block;font-size:.68rem;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-muted);font-weight:var(--fw-semibold);margin-top:2px">'+esc(m.en)+'</span>'
+      + '<span style="display:block;font-size:.8rem;color:var(--text-muted);margin-top:7px;line-height:1.4">'+esc(m.desc)+'</span></span></button>';
+  }).join('');
+
+  var photos = '';
+  for (var i = 1; i <= S.attach; i++)
+    photos += '<div style="width:88px;height:88px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--paper-200),var(--paper-50));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-500);font-size:.78rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.5),transparent 60%)"></span>รูป '+i+'</div>';
+
+  var qrBanner = S.qrShow
+    ? '<div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--radius-md);background:var(--grad-tint-pine);border:1px dashed rgba(37,102,91,0.34)">'
+      + '<div style="width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:#fff;border:1px solid rgba(37,102,91,0.2);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;padding:7px"><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span></div>'
+      + '<div style="flex:1;min-width:0"><div class="eyebrow" style="color:var(--accent-strong)">สแกน QR สำเร็จ</div><div style="font-weight:var(--fw-bold);font-size:.98rem">NB-00742 · Notebook Dell Latitude 5440</div><div style="font-size:.82rem;color:var(--text-muted)">กรอกข้อมูลอุปกรณ์ให้อัตโนมัติแล้ว</div></div>'
+      + '<button class="btn-ghost" style="padding:8px 16px;font-size:.84rem;box-shadow:none" onclick="clearQr()">ล้าง</button></div>'
+    : '';
+
+  return '<section style="animation:riseIn .6s var(--ease) both"><div style="max-width:720px;margin:0 auto">'
+  + '<div class="glass" style="padding:30px 32px;display:flex;flex-direction:column;gap:22px">'
+  +   qrBanner
+  +   '<div style="display:grid;gap:10px"><label class="label">ประเภทงานที่ต้องการแจ้ง</label>'
+  +     '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">'+cards+'</div></div>'
+  +   '<div style="display:grid;gap:8px"><label class="label">รายละเอียดปัญหา</label>'
+  +     '<textarea class="field" rows="4" oninput="S.desc=this.value;refreshReportSubmit()" placeholder="อธิบายอาการที่พบ เช่น เปิดไม่ติด มีเสียงดัง จอไม่แสดงภาพ…">'+esc(S.desc)+'</textarea></div>'
+  +   '<div style="display:grid;gap:8px"><label class="label">แนบรูปภาพ ('+(S.attach>0?(S.attach+' รูปแนบแล้ว'):'ยังไม่มีรูปแนบ')+')</label>'
+  +     '<div style="display:flex;gap:12px;flex-wrap:wrap">'
+  +       '<button onclick="addPhoto()" style="width:88px;height:88px;flex:0 0 auto;border:1px dashed rgba(37,102,91,0.34);background:var(--accent-soft);border-radius:var(--radius-md);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--accent-strong)"><span style="font-size:1.6rem;line-height:1;font-weight:var(--fw-light)">+</span><span style="font-size:.74rem;font-weight:var(--fw-semibold)">เพิ่มรูป</span></button>'
+  +       photos
+  +     '</div></div>'
+  +   '<div style="border-top:1px solid var(--line);padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">'
+  +     '<span id="report-hint" style="font-size:.84rem;color:var(--text-muted)">'+(canSubmit?'พร้อมส่งข้อมูลแล้ว':'เลือกประเภทงานและกรอกรายละเอียดก่อนส่ง')+'</span>'
+  +     '<button id="report-submit" class="btn-primary" style="font-size:1rem;padding:15px 30px" '+(canSubmit?'':'disabled')+' onclick="submitReport()">ส่งคำขอแจ้งซ่อม</button>'
+  +   '</div>'
+  + '</div></div></section>';
+}
+
+function pickCategory(k){ setState({ category:k }); }
+function refreshReportSubmit(){
+  var can = !!S.category && S.desc.trim().length > 0;
+  var btn = document.getElementById('report-submit'), hint = document.getElementById('report-hint');
+  if (btn) btn.disabled = !can;
+  if (hint) hint.textContent = can ? 'พร้อมส่งข้อมูลแล้ว' : 'เลือกประเภทงานและกรอกรายละเอียดก่อนส่ง';
+}
+function addPhoto(){ setState({ attach: Math.min(S.attach + 1, 4) }); }
+function clearQr(){ setState({ qrShow:false }); }
+function submitReport(){
+  if (!(S.desc.trim() && S.category)) return;
+  var assetId = S.scanAssetInfo ? S.scanAssetInfo.id : (S.qrShow ? 'NB-00742' : '');
+  var place   = S.scanAssetInfo ? S.scanAssetInfo.location : '';
+  var payload = { category:S.category, desc:S.desc.trim(), asset_id:assetId, place:place, attach:S.attach,
+                  requester_id:S.lineUserId, requester_name:S.displayName };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(res){
+        toastMsg('เปิดงานซ่อมแล้ว • หมายเลขงาน ' + (res && res.id ? res.id : '') + ' บันทึกลง Google Sheet แล้ว');
+        setState({ category:'', desc:'', attach:0 });
+        refreshTickets();
+      })
+      .withFailureHandler(function(){ toastMsg('บันทึกงานซ่อมไม่สำเร็จ กรุณาลองใหม่'); })
+      .createTicket(payload);
+  } else {
+    toastMsg('เปิดงานซ่อมแล้ว • หมายเลขงาน JOB-2569-0143 (โหมดสาธิต)');
+  }
+}
+
+/* Re-pull tickets after a write so lists stay in sync with the Sheet. */
+function refreshTickets(){
+  if (!hasBackend()) return;
+  google.script.run.withSuccessHandler(function(data){
+    S.ticketsRaw = (data && data.tickets) || S.ticketsRaw;
+    S.loanRaw = (data && data.loans) || S.loanRaw;
+    render();
+  }).getBootData();
+}
+
+/* ============================================================
+   TICKET LIST
+   ============================================================ */
+function filteredTickets(){
+  var all = allTickets();
+  return S.ticketFilter === 'all' ? all : all.filter(function(t){ return t.statusKey === S.ticketFilter; });
+}
+
+function viewTickets(){
+  var all = allTickets();
+  var cnt = function(k){ return all.filter(function(t){ return t.statusKey === k; }).length; };
+  var tabs = [['all','ทั้งหมด',all.length],['pending','รอรับงาน',cnt('pending')],['inprogress','กำลังซ่อม',cnt('inprogress')],['outsourced','ส่งบริษัทแล้ว',cnt('outsourced')],['resolved','ปิดงานแล้ว',cnt('resolved')]];
+  var tabsHtml = tabs.map(function(t){
+    var on = S.ticketFilter === t[0];
+    var bg = on ? 'var(--grad-tint-pine)' : 'rgba(255,255,255,0.7)';
+    var fg = on ? 'var(--accent-strong)' : 'var(--text-muted)';
+    var bd = on ? 'rgba(37,102,91,0.22)' : 'var(--border)';
+    var sh = on ? 'var(--shadow-soft)' : 'none';
+    return '<button onclick="setFilter(\''+t[0]+'\')" style="border:1px solid '+bd+';background:'+bg+';color:'+fg+';box-shadow:'+sh+';border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:var(--fw-semibold);font-size:.9rem;display:inline-flex;align-items:center;gap:9px;transition:var(--transition-base)">'
+      + esc(t[1]) + '<span style="background:rgba(27,40,38,0.08);border-radius:999px;padding:1px 9px;font-size:.78rem;font-weight:var(--fw-bold)">'+t[2]+'</span></button>';
+  }).join('');
+
+  var rows = filteredTickets().map(function(t){
+    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.7fr 1fr 1.15fr 1.1fr 0.95fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
+      + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
+      + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.by)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.tech)+'</span>'
+      + '<span style="color:'+t.slaColor+';font-weight:var(--fw-semibold);font-size:.85rem">'+esc(t.sla)+'</span>'
+      + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
+  }).join('');
+
+  return '<section style="animation:riseIn .6s var(--ease) both">'
+  + '<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">'+tabsHtml
+  +   '<div style="margin-left:auto;display:flex;gap:8px">'
+  +     '<button class="btn-primary" style="padding:10px 20px;font-size:.9rem" onclick="exportPdf()">พิมพ์ PDF</button>'
+  +     '<button class="btn-ghost" style="padding:10px 20px;font-size:.9rem" onclick="exportCsv()">ส่งออก CSV</button>'
+  +   '</div></div>'
+  + '<div class="glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
+  +   '<div style="display:grid;grid-template-columns:1.2fr 1.7fr 1fr 1.15fr 1.1fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span>SLA</span><span style="text-align:right">สถานะ</span></div>'
+  +   rows
+  + '</div></div></div></section>';
+}
+
+function setFilter(k){ setState({ ticketFilter:k }); }
+function openTicket(id){ setState({ screen:'detail', activeTicketId:id }); window.scrollTo(0,0); }
+
+function exportCsv(){
+  var rows = filteredTickets();
+  var head = ['หมายเลขงาน','อุปกรณ์','ผู้แจ้ง','ช่างผู้รับผิดชอบ','SLA','สถานะ'];
+  var escc = function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; };
+  var csv = [head].concat(rows.map(function(t){ return [t.id,t.dev,t.by,t.tech,t.sla,t.status]; }))
+    .map(function(r){ return r.map(escc).join(','); }).join('\r\n');
+  var blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url; a.download = 'รายการงานซ่อม.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+  toastMsg('ส่งออกไฟล์ CSV ('+rows.length+' รายการ) เรียบร้อยแล้ว');
+}
+
+function exportPdf(){
+  var rows = filteredTickets();
+  var escp = function(v){ return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var trs = rows.map(function(t,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+escp(t.id)+'</td><td class="l">'+escp(t.dev)+'</td><td>'+escp(t.by)+'</td><td>'+escp(t.tech)+'</td><td>'+escp(t.sla)+'</td><td>'+escp(t.status)+'</td></tr>';
+  }).join('');
+  var html = '<!doctype html><html lang="th"><head><meta charset="utf-8"><title>รายการงานซ่อม IT</title>'
+    + '<style>@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap");'
+    + '*{font-family:\'Sarabun\',sans-serif;box-sizing:border-box}body{margin:38px;color:#1e2b28}'
+    + 'h1{font-size:20px;margin:0;font-weight:800}.sub{color:#687571;font-size:13px}'
+    + '.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #25665b;padding-bottom:12px;margin-bottom:18px}'
+    + '.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:11px;background:#25665b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}'
+    + 'table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #d6ddd9;padding:8px 10px;text-align:center}'
+    + 'th{background:#e5f0ed;color:#194940;font-weight:700}td.l,th.l{text-align:left}.foot{margin-top:18px;font-size:11px;color:#687571}'
+    + '@media print{body{margin:14mm}}</style></head><body>'
+    + '<div class="head"><div class="brand"><div class="logo">IT</div><div><h1>รายการงานซ่อม IT</h1>'
+    + '<div class="sub">สอ.กรมวิชาการเกษตร จำกัด · '+rows.length+' รายการ</div></div></div>'
+    + '<div class="sub">พิมพ์เมื่อ 22 มิ.ย. 2569</div></div>'
+    + '<table><thead><tr><th>#</th><th>หมายเลขงาน</th><th class="l">อุปกรณ์</th><th>ผู้แจ้ง</th><th>ช่าง</th><th>SLA</th><th>สถานะ</th></tr></thead><tbody>'
+    + trs + '</tbody></table><div class="foot">เอกสารนี้สร้างจากระบบแจ้งซ่อม IT โดยอัตโนมัติ</div></body></html>';
+  var w = window.open('', '_blank');
+  if (!w){ toastMsg('กรุณาอนุญาต pop-up เพื่อพิมพ์ PDF'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+  setTimeout(function(){ try { w.focus(); w.print(); } catch(e){} }, 500);
+  toastMsg('เปิดหน้าพิมพ์ PDF ('+rows.length+' รายการ) แล้ว — เลือก "บันทึกเป็น PDF"');
+}
+
+/* ============================================================
+   TICKET DETAIL
+   ============================================================ */
+function viewDetail(){
+  var all = allTickets();
+  var t = all.filter(function(x){ return x.id === S.activeTicketId; })[0] || all[0];
+
+  var commentsHtml = S.comments.map(function(c){
+    var av = c.tone === 'me' ? 'ก' : (c.tone === 'sys' ? 'S' : 'ช');
+    var avBg = c.tone === 'me' ? 'var(--accent)' : 'rgba(37,102,91,0.12)';
+    var avFg = c.tone === 'me' ? '#fff' : 'var(--accent-strong)';
+    return '<div style="display:flex;gap:12px;align-items:flex-start">'
+      + '<span style="width:36px;height:36px;flex:0 0 auto;border-radius:999px;background:'+avBg+';color:'+avFg+';display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);font-size:.86rem">'+av+'</span>'
+      + '<div style="flex:1;background:var(--surface-strong);border:1px solid var(--line);border-radius:var(--radius-md);padding:12px 15px">'
+      + '<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:3px"><span style="font-weight:var(--fw-semibold);font-size:.88rem">'+esc(c.who)+'</span><span style="font-size:.78rem;color:var(--text-muted)">'+esc(c.when)+'</span></div>'
+      + '<div style="font-size:.9rem;line-height:var(--leading-normal)">'+esc(c.text)+'</div></div></div>';
+  }).join('');
+
+  var timelineHtml = TIMELINE.map(function(ev){
+    return '<div style="display:flex;gap:14px"><div style="position:relative;width:14px;flex:0 0 auto;display:flex;justify-content:center"><div style="width:2px;background:var(--line);flex:1"></div><span style="position:absolute;top:2px;width:14px;height:14px;border-radius:999px;background:'+ev.color+';border:3px solid var(--surface-strong)"></span></div>'
+      + '<div style="padding-bottom:18px"><div style="font-size:.76rem;color:var(--text-muted)">'+esc(ev.when)+'</div><div style="font-weight:var(--fw-semibold);font-size:.92rem;margin-top:1px">'+esc(ev.title)+'</div><div style="font-size:.82rem;color:var(--text-muted);line-height:var(--leading-normal)">'+esc(ev.desc)+'</div></div></div>';
+  }).join('');
+
+  return '<section style="animation:riseIn .6s var(--ease) both">'
+  + '<button class="btn-ghost" style="padding:9px 18px;font-size:.88rem;margin-bottom:18px" onclick="go(\'tickets\')">← กลับไปรายการงาน</button>'
+  + '<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start">'
+  +   '<div style="display:flex;flex-direction:column;gap:22px">'
+  +     '<div class="glass" style="padding:26px 28px">'
+  +       '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px">'
+  +         '<div><div class="eyebrow">หมายเลขงาน</div><h2 style="margin:4px 0 0;font-size:var(--text-h3);font-weight:var(--fw-black)">'+esc(t.id)+'</h2></div>'
+  +         '<span style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-size:.86rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+'"><span style="width:8px;height:8px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span>'
+  +       '</div>'
+  +       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">'
+  +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">อุปกรณ์</div><div style="font-weight:var(--fw-semibold)">'+esc(t.dev)+'</div></div>'
+  +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">ผู้แจ้ง</div><div style="font-weight:var(--fw-semibold)">'+esc(t.by)+'</div></div>'
+  +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">สถานที่</div><div style="font-weight:var(--fw-semibold)">'+esc(t.place)+'</div></div>'
+  +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">วันที่แจ้ง</div><div style="font-weight:var(--fw-semibold)">'+esc(t.at)+'</div></div>'
+  +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">ช่างผู้รับผิดชอบ</div><div style="font-weight:var(--fw-semibold)">'+esc(t.tech)+'</div></div>'
+  +       '</div>'
+  +       '<div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px"><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:5px">อาการที่แจ้ง</div><p style="margin:0;line-height:var(--leading-normal)">เครื่องเปิดไม่ติด กดปุ่ม power แล้วไฟสถานะกะพริบแต่จอไม่แสดงภาพ มีเสียงบี๊บเป็นจังหวะ สันนิษฐานว่าเป็นที่หน่วยความจำหรือเมนบอร์ด</p></div>'
+  +     '</div>'
+  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 14px;font-size:1.05rem;font-weight:var(--fw-bold)">รูปก่อน / หลังซ่อม</h3>'
+  +       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+  +         '<div><div style="aspect-ratio:4/3;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--paper-200),var(--paper-50));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-500);font-size:.84rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.5),transparent 60%)"></span>ภาพถ่ายอาการเสีย</div><div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:8px;font-weight:var(--fw-semibold)">ก่อนซ่อม</div></div>'
+  +         '<div><div style="aspect-ratio:4/3;border-radius:var(--radius-md);background:var(--accent-soft);border:1px dashed rgba(37,102,91,0.3);display:flex;align-items:center;justify-content:center;color:var(--accent-strong);font-size:.84rem">รอช่างอัปโหลด</div><div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:8px;font-weight:var(--fw-semibold)">หลังซ่อม</div></div>'
+  +       '</div></div>'
+  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 16px;font-size:1.05rem;font-weight:var(--fw-bold)">ความคิดเห็น</h3>'
+  +       '<div style="display:flex;flex-direction:column;gap:16px">'+commentsHtml+'</div>'
+  +       '<div style="display:flex;gap:10px;margin-top:16px">'
+  +         '<input id="comment-input" value="'+esc(S.commentDraft)+'" oninput="S.commentDraft=this.value" onkeydown="if(event.key===\'Enter\')addComment()" placeholder="เพิ่มความคิดเห็น…" style="flex:1;border:1px solid var(--border);border-radius:999px;padding:12px 18px;font-size:.92rem;background:rgba(255,255,255,0.82);outline:none;color:var(--text-body)">'
+  +         '<button class="btn-primary" style="padding:12px 24px" onclick="addComment()">ส่ง</button>'
+  +       '</div></div>'
+  +   '</div>'
+  +   '<div style="display:flex;flex-direction:column;gap:22px;position:sticky;top:24px">'
+  +     '<div class="glass" style="padding:26px 28px;text-align:center"><div class="eyebrow">SLA COUNTDOWN</div>'
+  +       '<div style="font-size:3rem;font-weight:var(--fw-black);letter-spacing:var(--tracking-hero);margin:10px 0 4px;color:'+t.slaColor+'">02:14:30</div>'
+  +       '<div style="color:var(--text-muted);font-size:.88rem">เวลาคงเหลือก่อนครบกำหนด SLA</div>'
+  +       '<div style="height:10px;border-radius:999px;background:rgba(27,40,38,0.07);overflow:hidden;margin:18px 0 10px"><div style="height:100%;width:64%;background:var(--grad-accent);border-radius:999px"></div></div>'
+  +       '<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-muted)"><span>รับงาน 10:40</span><span>ครบกำหนด 16:40</span></div></div>'
+  +     viewDetailActions(t)
+  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 16px;font-size:1.05rem;font-weight:var(--fw-bold)">ไทม์ไลน์กิจกรรม</h3><div style="display:flex;flex-direction:column">'+timelineHtml+'</div></div>'
+  +   '</div>'
+  + '</div></section>';
+}
+
+function addComment(){
+  var t = S.commentDraft.trim(); if (!t) return;
+  setState(function(s){ return { comments: s.comments.concat([{ who:'เจ้าหน้าที่ IT', when:'ตอนนี้', text:t, tone:'me' }]), commentDraft:'' }; });
+}
+
+/* ============================================================
+   LOANS
+   ============================================================ */
+function viewLoans(){
+  var seg = function(on){ return on
+    ? 'background:var(--grad-accent);color:var(--text-on-accent);box-shadow:var(--shadow-accent)'
+    : 'background:transparent;color:var(--text-muted);box-shadow:none'; };
+  var canSubmit = !!(S.loanDevice && S.loanFrom && S.loanTo);
+
+  var tabs = '<div style="display:flex;width:max-content;gap:4px;padding:4px;background:var(--surface-veil);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-soft);margin:0 auto 22px">'
+    + '<button onclick="setLoanTab(\'new\')" style="border:0;border-radius:999px;padding:10px 20px;cursor:pointer;font-weight:var(--fw-semibold);font-size:.9rem;transition:var(--transition-base);'+seg(S.loanTab==='new')+'">ขอยืมใหม่</button>'
+    + '<button onclick="setLoanTab(\'history\')" style="border:0;border-radius:999px;padding:10px 20px;cursor:pointer;font-weight:var(--fw-semibold);font-size:.9rem;transition:var(--transition-base);'+seg(S.loanTab==='history')+'">ประวัติการยืม</button></div>';
+
+  var body;
+  if (S.loanTab === 'new'){
+    var opts = '<option value="">— เลือกอุปกรณ์ที่ว่าง —</option>' + FREE_DEVICES.map(function(d){
+      return '<option value="'+esc(d.id)+'"'+(S.loanDevice===d.id?' selected':'')+'>'+esc(d.label)+'</option>'; }).join('');
+    body = '<div class="glass" style="max-width:640px;margin:0 auto;padding:30px 32px;display:flex;flex-direction:column;gap:22px">'
+      + '<div style="display:grid;gap:8px"><label class="label">อุปกรณ์ที่ว่าง</label><select class="field" onchange="S.loanDevice=this.value;refreshLoanSubmit()">'+opts+'</select></div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+      +   '<div style="display:grid;gap:8px"><label class="label">วันที่ยืม</label><input class="field" type="date" value="'+esc(S.loanFrom)+'" onchange="S.loanFrom=this.value;refreshLoanSubmit()"></div>'
+      +   '<div style="display:grid;gap:8px"><label class="label">กำหนดคืน</label><input class="field" type="date" value="'+esc(S.loanTo)+'" onchange="S.loanTo=this.value;refreshLoanSubmit()"></div>'
+      + '</div>'
+      + '<div style="border-top:1px solid var(--line);padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">'
+      +   '<span id="loan-hint" style="font-size:.84rem;color:var(--text-muted)">'+(canSubmit?'พร้อมส่งคำขอยืม':'เลือกอุปกรณ์และระบุวันที่ก่อนส่ง')+'</span>'
+      +   '<button id="loan-submit" class="btn-primary" style="font-size:1rem;padding:15px 30px" '+(canSubmit?'':'disabled')+' onclick="submitLoan()">ส่งคำขอยืม</button>'
+      + '</div></div>';
+  } else {
+    var cards = loanHistory().map(function(l){
+      return '<div class="glass" style="border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:20px 22px">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px"><strong style="font-size:1rem;line-height:1.35">'+esc(l.dev)+'</strong>'
+        + '<span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:var(--fw-bold);background:'+l.bg+';color:'+l.fg+';border:1px solid '+l.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(l.status)+'</span></div>'
+        + '<div style="font-size:.86rem;color:var(--text-muted);display:flex;flex-direction:column;gap:4px"><div>ผู้ยืม: <span style="color:var(--text-body);font-weight:var(--fw-semibold)">'+esc(l.by)+'</span></div><div>ช่วงยืม: '+esc(l.from)+' – '+esc(l.to)+'</div></div></div>';
+    }).join('');
+    body = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:840px;margin:0 auto">'+cards+'</div>';
+  }
+
+  return '<section style="animation:riseIn .6s var(--ease) both">'+tabs+body+'</section>';
+}
+
+function setLoanTab(k){ setState({ loanTab:k }); }
+function refreshLoanSubmit(){
+  var can = !!(S.loanDevice && S.loanFrom && S.loanTo);
+  var btn = document.getElementById('loan-submit'), hint = document.getElementById('loan-hint');
+  if (btn) btn.disabled = !can;
+  if (hint) hint.textContent = can ? 'พร้อมส่งคำขอยืม' : 'เลือกอุปกรณ์และระบุวันที่ก่อนส่ง';
+}
+function submitLoan(){
+  if (!(S.loanDevice && S.loanFrom && S.loanTo)) return;
+  var sel = FREE_DEVICES.filter(function(d){ return d.id === S.loanDevice; })[0];
+  var payload = { dev: sel ? sel.label.split(' · ')[1] : S.loanDevice, from:S.loanFrom, to:S.loanTo };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(){
+        toastMsg('ส่งคำขอยืมอุปกรณ์แล้ว • บันทึกลง Google Sheet · รออนุมัติ');
+        setState({ loanDevice:'', loanFrom:'', loanTo:'', loanTab:'history' });
+        refreshTickets();
+      })
+      .withFailureHandler(function(){ toastMsg('ส่งคำขอยืมไม่สำเร็จ กรุณาลองใหม่'); })
+      .submitLoan(payload);
+  } else {
+    toastMsg('ส่งคำขอยืมอุปกรณ์แล้ว • รออนุมัติจากผู้ดูแลระบบ (โหมดสาธิต)');
+  }
+}
+
+/* ============================================================
+   QR CODES
+   ============================================================ */
+function viewQr(){
+  var cards = S.deviceRegistry.map(function(d){
+    return '<div class="glass" style="border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">'
+      + qrBox(d.id)
+      + '<div><div style="font-weight:var(--fw-bold);color:var(--accent-strong);font-size:.92rem">'+esc(d.id)+'</div><div style="font-size:.82rem;color:var(--text-muted);margin-top:2px;line-height:1.35">'+esc(d.name)+'</div></div>'
+      + '<div style="display:flex;gap:8px;width:100%">'
+      +   '<button class="btn-ghost" style="flex:1;padding:9px 0;font-size:.82rem;color:var(--accent-strong)" onclick="openEditDevice(\''+esc(d.id)+'\')">แก้ไข</button>'
+      +   '<button style="flex:1;border:1px solid rgba(176,93,70,0.30);background:var(--danger-soft);border-radius:999px;padding:9px 0;font-size:.82rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--danger);transition:var(--transition-base)" onclick="deleteDevice(\''+esc(d.id)+'\')">ลบ</button>'
+      + '</div>'
+      + '<button style="border:0;background:var(--grad-tint-pine);border-radius:999px;padding:9px 18px;font-size:.84rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--accent-strong);width:100%;transition:var(--transition-base)" onclick="printQr(\''+esc(d.id)+'\')">พิมพ์ PDF</button>'
+      + '</div>';
+  }).join('');
+
+  var modal = '';
+  if (S.devForm.open){
+    var f = S.devForm;
+    modal = '<div onclick="if(event.target===this)closeDevForm()" style="position:fixed;inset:0;z-index:60;background:rgba(30,43,40,0.34);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;animation:riseIn .24s var(--ease) both">'
+      + '<div class="glass" style="width:100%;max-width:440px;padding:28px 30px;display:flex;flex-direction:column;gap:20px">'
+      + '<div><div class="eyebrow">'+(f.mode==='edit'?'EDIT DEVICE':'NEW DEVICE')+'</div><h2 style="margin:4px 0 0;font-size:var(--text-h3);font-weight:var(--fw-black);letter-spacing:var(--tracking-tight)">'+(f.mode==='edit'?'แก้ไขข้อมูลอุปกรณ์':'เพิ่มอุปกรณ์ใหม่')+'</h2></div>'
+      + '<div style="display:grid;gap:8px"><label class="label">รหัสอุปกรณ์</label><input class="field" style="padding:14px 16px" value="'+esc(f.id)+'" oninput="onDevFormField(\'id\',this.value)" placeholder="เช่น NB-00999"></div>'
+      + '<div style="display:grid;gap:8px"><label class="label">ชื่ออุปกรณ์</label><input class="field" style="padding:14px 16px" value="'+esc(f.name)+'" oninput="onDevFormField(\'name\',this.value)" placeholder="เช่น Notebook Dell Latitude 5440"></div>'
+      + (f.error ? '<div style="display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:var(--radius-md);background:var(--danger-soft);border:1px solid rgba(176,93,70,0.26);color:var(--danger);font-size:.86rem;font-weight:var(--fw-semibold)"><span style="width:8px;height:8px;border-radius:999px;background:var(--danger);flex:0 0 auto"></span>'+esc(f.error)+'</div>' : '')
+      + '<div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:18px">'
+      +   '<button class="btn-ghost" style="padding:13px 24px;font-size:.94rem" onclick="closeDevForm()">ยกเลิก</button>'
+      +   '<button class="btn-primary" style="padding:13px 28px;font-size:.94rem" onclick="saveDevice()">'+(f.mode==='edit'?'บันทึกการแก้ไข':'เพิ่มอุปกรณ์')+'</button>'
+      + '</div></div></div>';
+  }
+
+  return '<section style="animation:riseIn .6s var(--ease) both">'
+  + '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">'
+  +   '<span style="color:var(--text-muted);font-size:.94rem">อุปกรณ์ที่ลงทะเบียน '+S.deviceRegistry.length+' ชิ้น · สแกนเพื่อแจ้งซ่อมหน้างานได้ทันที</span>'
+  +   '<div style="display:flex;gap:8px">'
+  +     '<button class="btn-primary" style="padding:12px 22px;font-size:.92rem;display:inline-flex;align-items:center;gap:8px" onclick="openAddDevice()"><span style="font-size:1.1rem;line-height:1;font-weight:var(--fw-light)">+</span>เพิ่มอุปกรณ์</button>'
+  +     '<button class="btn-ghost" style="padding:12px 22px;font-size:.92rem" onclick="printAll()">พิมพ์ทั้งหมด (PDF)</button>'
+  +   '</div></div>'
+  + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px">'+cards+'</div>'
+  + modal + '</section>';
+}
+
+function openAddDevice(){ setState({ devForm:{ open:true, mode:'add', editId:null, id:'', name:'', error:'' } }); }
+function openEditDevice(id){
+  var d = S.deviceRegistry.filter(function(x){ return x.id === id; })[0];
+  if (!d) return;
+  setState({ devForm:{ open:true, mode:'edit', editId:id, id:d.id, name:d.name, error:'' } });
+}
+function closeDevForm(){ setState(function(s){ var f = s.devForm; f.open = false; return { devForm:f }; }); }
+function onDevFormField(key, val){ S.devForm[key] = val; S.devForm.error = ''; }
+function saveDevice(){
+  var f = S.devForm, id = f.id.trim(), name = f.name.trim();
+  if (!id || !name){ setState(function(s){ s.devForm.error = 'กรุณากรอกรหัสและชื่ออุปกรณ์ให้ครบ'; return { devForm:s.devForm }; }); return; }
+  var dup = S.deviceRegistry.some(function(d){ return d.id === id && d.id !== f.editId; });
+  if (dup){ setState(function(s){ s.devForm.error = 'รหัสอุปกรณ์นี้มีอยู่แล้ว'; return { devForm:s.devForm }; }); return; }
+  var reg;
+  if (f.mode === 'edit') reg = S.deviceRegistry.map(function(d){ return d.id === f.editId ? { id:id, name:name } : d; });
+  else reg = S.deviceRegistry.concat([{ id:id, name:name }]);
+  var editId = f.editId, mode = f.mode;
+  S.devForm.open = false;
+  setState({ deviceRegistry:reg, devForm:S.devForm });
+  toastMsg(mode === 'edit' ? ('แก้ไขข้อมูลอุปกรณ์ '+id+' แล้ว') : ('เพิ่มอุปกรณ์ '+id+' เรียบร้อยแล้ว'));
+  if (hasBackend())
+    google.script.run.withFailureHandler(function(){ toastMsg('บันทึกอุปกรณ์ลง Google Sheet ไม่สำเร็จ'); })
+      .saveDevice({ id:id, name:name, editId:(mode === 'edit' ? editId : null) });
+}
+function deleteDevice(id){
+  setState({ deviceRegistry: S.deviceRegistry.filter(function(d){ return d.id !== id; }) });
+  toastMsg('ลบอุปกรณ์ '+id+' ออกจากระบบแล้ว');
+  if (hasBackend())
+    google.script.run.withFailureHandler(function(){ toastMsg('ลบอุปกรณ์จาก Google Sheet ไม่สำเร็จ'); }).deleteDevice(id);
+}
+function printQr(id){ toastMsg('กำลังสร้างไฟล์ PDF QR สำหรับ '+id+' …'); }
+function printAll(){ toastMsg('กำลังสร้างไฟล์ PDF QR ทั้งหมด '+S.deviceRegistry.length+' ชิ้น …'); }
+
+/* ============================================================
+   PM CALENDAR (มิถุนายน 2569 / June 2026)
+   ============================================================ */
+function viewPm(){
+  var evTone = { accent:{ c:'var(--accent)', bg:'var(--accent-soft)', fg:'var(--accent-strong)' }, warning:{ c:'var(--warning)', bg:'var(--warning-soft)', fg:'var(--warning)' }, danger:{ c:'var(--danger)', bg:'var(--danger-soft)', fg:'var(--danger)' } };
+  var ev = function(label, k){ var t = evTone[k]; return { label:label, c:t.c, bg:t.bg, fg:t.fg }; };
+  var pmEvents = { 3:[ev('Switch Cisco 2960','accent')], 6:[ev('UPS APC 3kVA','warning')], 10:[ev('Notebook ชุดที่ 1','accent')], 13:[ev('เครื่องพิมพ์ HP','accent')], 17:[ev('แอร์ห้อง Server','danger')], 20:[ev('จอภาพ ชุด B','accent')], 24:[ev('Firewall FortiGate','warning')], 27:[ev('Notebook ชุดที่ 2','accent')] };
+  var dows = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+  var lead = 1; // June 1 2026 = Monday (Sun=0)
+  var cells = [];
+  var i;
+  for (i = 0; i < lead; i++) cells.push(null);
+  for (var d = 1; d <= 30; d++) cells.push({ day:d, today:d===21, events:pmEvents[d]||[] });
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  var cellsHtml = cells.map(function(c){
+    if (!c) return '<div style="min-height:100px;border-radius:12px;padding:9px;background:transparent;border:1px solid var(--line)"></div>';
+    var bg = c.today ? 'var(--accent-soft)' : 'var(--surface-strong)';
+    var dayColor = c.today ? 'var(--accent-strong)' : 'var(--text-body)';
+    var evs = c.events.map(function(e){
+      return '<div style="display:flex;align-items:center;gap:6px;background:'+e.bg+';color:'+e.fg+';border-radius:8px;padding:4px 7px;font-size:.72rem;font-weight:var(--fw-semibold);line-height:1.25"><span style="width:6px;height:6px;border-radius:999px;background:'+e.c+';flex:0 0 auto"></span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.label)+'</span></div>';
+    }).join('');
+    return '<div style="min-height:100px;border-radius:12px;padding:9px;background:'+bg+';border:1px solid var(--line)"><div style="font-weight:var(--fw-bold);font-size:.92rem;color:'+dayColor+';margin-bottom:6px">'+c.day+'</div><div style="display:flex;flex-direction:column;gap:5px">'+evs+'</div></div>';
+  }).join('');
+
+  var dowsHtml = dows.map(function(x){ return '<div style="text-align:center;font-size:.8rem;font-weight:var(--fw-semibold);color:var(--text-muted);padding:4px 0">'+esc(x)+'</div>'; }).join('');
+
+  return '<section style="animation:riseIn .6s var(--ease) both"><div class="glass" style="padding:26px 28px">'
+  + '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">'
+  +   '<div style="display:flex;align-items:center;gap:14px"><span style="width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;color:var(--ink-500);cursor:pointer">‹</span><h2 style="margin:0;font-size:var(--text-h3);font-weight:var(--fw-black)">มิถุนายน 2569</h2><span style="width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;color:var(--ink-500);cursor:pointer">›</span></div>'
+  +   '<div style="display:flex;gap:16px;font-size:.82rem;color:var(--text-muted);flex-wrap:wrap"><span style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--accent)"></span>ตามรอบปกติ</span><span style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--warning)"></span>เฝ้าระวัง</span><span style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--danger)"></span>สำคัญ</span></div>'
+  + '</div>'
+  + '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px">'+dowsHtml+'</div>'
+  + '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">'+cellsHtml+'</div>'
+  + '</div></section>';
+}
+
+/* ============================================================
+   MOBILE QUICK REPORT
+   ============================================================ */
+function viewMobile(){
+  var canSubmit = S.desc.trim().length > 0;
+  return '<section style="animation:riseIn .6s var(--ease) both;display:flex;justify-content:center;padding-top:6px">'
+  + '<div style="width:384px;flex:0 0 auto;background:#1e2b28;border-radius:48px;padding:13px;box-shadow:0 40px 80px rgba(29,44,39,0.34)">'
+  +   '<div style="background:var(--app-background);border-radius:37px;overflow:hidden;height:768px;display:flex;flex-direction:column;position:relative">'
+  +     '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 26px 6px;font-size:.78rem;font-weight:var(--fw-bold);color:var(--ink-900)"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:8px;border:1.5px solid var(--ink-900);border-radius:2px;display:inline-block"></span></span></div>'
+  +     '<div style="flex:1;overflow-y:auto;padding:14px 18px 22px;display:flex;flex-direction:column;gap:16px">'
+  +       '<div><div class="eyebrow" style="font-size:.7rem">SCAN · แจ้งซ่อมด่วน</div><h2 style="margin:5px 0 0;font-size:1.5rem;font-weight:var(--fw-black);letter-spacing:var(--tracking-tight)">แจ้งซ่อมหน้างาน</h2></div>'
+  +       '<div style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:var(--radius-md);background:var(--grad-tint-pine);border:1px dashed rgba(37,102,91,0.34)">'
+  +         '<div style="width:38px;height:38px;flex:0 0 auto;border-radius:10px;background:#fff;border:1px solid rgba(37,102,91,0.2);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;padding:6px"><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span></div>'
+  +         '<div style="flex:1;min-width:0"><div class="eyebrow" style="font-size:.66rem;color:var(--accent-strong)">สแกนสำเร็จ</div><div style="font-weight:var(--fw-bold);font-size:.9rem">NB-00742 · Dell Latitude</div></div></div>'
+  +       '<div><div style="font-size:.86rem;color:var(--text-muted);font-weight:var(--fw-semibold);margin-bottom:9px">อาการที่พบ</div>'
+  +         '<textarea class="field" rows="3" style="padding:14px 15px;resize:none" oninput="S.desc=this.value;refreshMobileSubmit()" placeholder="พิมพ์อาการสั้นๆ…">'+esc(S.desc)+'</textarea>'
+  +         '<button onclick="addPhoto()" style="margin-top:10px;width:100%;border:1px dashed rgba(37,102,91,0.34);background:var(--accent-soft);border-radius:var(--radius-md);padding:14px;cursor:pointer;color:var(--accent-strong);font-weight:var(--fw-semibold);font-size:.92rem;min-height:50px">+ ถ่ายรูปแนบ ('+S.attach+')</button></div>'
+  +       '<button id="mobile-submit" class="btn-primary" style="margin-top:auto;width:100%;font-size:1.05rem;padding:17px;min-height:56px" '+(canSubmit?'':'disabled')+' onclick="submitMobile()">ส่งแจ้งซ่อม</button>'
+  +     '</div>'
+  +   '</div>'
+  + '</div></section>';
+}
+function refreshMobileSubmit(){
+  var btn = document.getElementById('mobile-submit');
+  if (btn) btn.disabled = S.desc.trim().length === 0;
+}
+function submitMobile(){
+  if (S.desc.trim().length === 0) return;
+  toastMsg('ส่งแจ้งซ่อมด่วนแล้ว • หมายเลขงาน JOB-2569-0143');
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+function fetchAlerts(){
+  if (!hasBackend()) return;
+  google.script.run
+    .withSuccessHandler(function(res){ if (res && res.ok) setState({ alerts: res.alerts || [] }); })
+    .withFailureHandler(function(){})
+    .getAlerts(S.role, S.department, S.lineUserId);
+}
+
+function viewAlertBanner(){
+  if (S.alertDismissed || !S.alerts || !S.alerts.length) return '';
+  var icons = { pending:'🔔', outsourced:'🏢', update:'📋', info:'ℹ️' };
+  var items = S.alerts.map(function(a){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);background:rgba(255,255,255,0.6);border:1px solid var(--line)">'
+      + '<span style="font-size:1.1rem">'+(icons[a.type]||'🔔')+'</span>'
+      + '<span style="font-size:.92rem;font-weight:var(--fw-semibold);flex:1">'+esc(a.msg)+'</span>'
+      + (a.type==='pending'    ? '<button onclick="go(\'tickets\')"   style="border:0;background:var(--accent);color:#fff;border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:var(--fw-bold);cursor:pointer">ดูงาน</button>' : '')
+      + (a.type==='outsourced' ? '<button onclick="go(\'tickets\')"   style="border:0;background:var(--warning);color:#fff;border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:var(--fw-bold);cursor:pointer">ดูงาน</button>' : '')
+      + (a.type==='update'     ? '<button onclick="go(\'mytickets\')" style="border:0;background:var(--accent);color:#fff;border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:var(--fw-bold);cursor:pointer">ดูสถานะ</button>' : '')
+      + '</div>';
+  }).join('');
+  return '<div style="margin-bottom:18px;padding:16px 18px;border-radius:var(--radius-lg);background:var(--grad-tint-pine);border:1px solid rgba(37,102,91,0.22);display:flex;flex-direction:column;gap:10px;animation:riseIn .4s var(--ease) both">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">'
+    + '<span style="font-size:.78rem;font-weight:var(--fw-bold);letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--accent-strong)">การแจ้งเตือน</span>'
+    + '<button onclick="dismissAlert()" style="border:0;background:transparent;color:var(--ink-500);cursor:pointer;font-size:1.2rem;line-height:1;padding:2px 6px">×</button>'
+    + '</div>'
+    + items + '</div>';
+}
+
+function dismissAlert(){ setState({ alertDismissed: true }); }
+
+/* ============================================================
+   MY TICKETS — งานซ่อมของฉัน (staff)
+   ============================================================ */
+function viewMyTickets(){
+  var mine = allTickets().filter(function(t){ return t.requester_id === S.lineUserId || t.by === S.displayName; });
+  if (!mine.length){
+    return '<section style="animation:riseIn .6s var(--ease) both">'
+      + '<div class="glass" style="padding:48px;text-align:center;color:var(--text-muted)">'
+      + '<div style="font-size:2.5rem;margin-bottom:12px">📋</div>'
+      + '<div style="font-weight:var(--fw-semibold)">ยังไม่มีงานซ่อมที่คุณแจ้ง</div>'
+      + '<div style="font-size:.88rem;margin-top:6px">กด "แจ้งซ่อม" เพื่อเปิดงานซ่อมใหม่</div>'
+      + '<button class="btn-primary" style="margin-top:18px;padding:13px 28px" onclick="go(\'report\')">แจ้งซ่อมอุปกรณ์</button>'
+      + '</div></section>';
+  }
+  var rows = mine.map(function(t){
+    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.8fr 1fr 1.1fr 1fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
+      + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
+      + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
+      + '<span style="color:var(--text-muted);font-size:.84rem">'+esc(t.at)+'</span>'
+      + '<span style="color:'+t.slaColor+';font-weight:var(--fw-semibold);font-size:.85rem">'+esc(t.sla)+'</span>'
+      + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span>'
+      + '</div>';
+  }).join('');
+  return '<section style="animation:riseIn .6s var(--ease) both"><div class="glass" style="padding:24px 26px">'
+    + '<div style="display:grid;grid-template-columns:1.2fr 1.8fr 1fr 1.1fr 1fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>วันที่แจ้ง</span><span>SLA</span><span style="text-align:right">สถานะ</span></div>'
+    + rows + '</div></section>';
+}
+
+/* ============================================================
+   DETAIL ACTIONS — ปุ่มดำเนินงาน (IT tech/admin เท่านั้น)
+   ============================================================ */
+function viewDetailActions(t){
+  var isIT = (S.role === 'tech' || S.role === 'admin');
+  if (!isIT) return '';
+  var sk = t.statusKey;
+
+  if (sk === 'resolved'){
+    return '<div class="glass" style="padding:20px 22px">'
+      + '<div class="eyebrow" style="margin-bottom:10px">สรุปการซ่อม</div>'
+      + '<div style="display:flex;flex-direction:column;gap:8px;font-size:.88rem">'
+      + '<div><span style="color:var(--text-muted)">วิธีแก้ไข: </span><span style="font-weight:var(--fw-semibold)">'+esc(t.solution||'—')+'</span></div>'
+      + '<div><span style="color:var(--text-muted)">อะไหล่: </span><span style="font-weight:var(--fw-semibold)">'+esc(t.parts||'—')+'</span></div>'
+      + '<div><span style="color:var(--text-muted)">เวลาทำงาน: </span><span style="font-weight:var(--fw-semibold)">'+esc(t.work_hours||'—')+' ชม.</span></div>'
+      + '<div style="margin-top:6px;display:flex;align-items:center;gap:8px;color:var(--accent-strong);font-weight:var(--fw-bold)"><span style="width:8px;height:8px;border-radius:999px;background:var(--accent)"></span>ปิดงานแล้ว · '+esc(t.resolved_at)+'</div>'
+      + '</div></div>';
+  }
+
+  var html = '<div class="glass" style="padding:22px 24px;display:flex;flex-direction:column;gap:12px"><div class="eyebrow">การดำเนินงาน</div>';
+
+  if (sk === 'pending'){
+    html += '<button class="btn-primary" style="padding:14px;font-size:.96rem;width:100%" onclick="doAssignTicket(\''+esc(t.id)+'\')">✔ รับงานซ่อม</button>';
+  }
+
+  if (sk === 'inprogress'){
+    html += '<div style="background:var(--warning-soft);border:1px solid rgba(179,132,44,0.22);border-radius:var(--radius-md);padding:10px 13px;font-size:.84rem;font-weight:var(--fw-semibold);color:var(--warning)">ซ่อมเองไม่ได้? ส่งต่อบริษัทภายนอก</div>'
+      + '<input class="field" style="padding:12px 14px;font-size:.88rem" placeholder="ระบุชื่อบริษัท / รายละเอียด…" value="'+esc(S.resolveForm.vendorNote)+'" oninput="S.resolveForm.vendorNote=this.value">'
+      + '<button style="border:1px solid var(--warning);background:var(--warning-soft);border-radius:999px;padding:12px;font-size:.9rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--warning);width:100%" onclick="doOutsourceTicket(\''+esc(t.id)+'\')">ส่งต่อบริษัท →</button>'
+      + '<div style="border-top:1px solid var(--line);padding-top:12px;font-size:.82rem;color:var(--text-muted);font-weight:var(--fw-semibold)">หรือซ่อมเสร็จแล้ว — กรอกสรุปแล้วปิดงาน</div>';
+  }
+
+  if (sk === 'outsourced'){
+    html += '<div style="background:var(--warning-soft);border:1px solid rgba(179,132,44,0.22);border-radius:var(--radius-md);padding:10px 13px;font-size:.84rem;font-weight:var(--fw-semibold);color:var(--warning)">บริษัทแก้ไขเสร็จแล้ว — กรอกสรุปแล้วปิดงาน</div>';
+  }
+
+  if (sk === 'inprogress' || sk === 'outsourced'){
+    html += '<textarea class="field" rows="2" style="padding:12px 14px;font-size:.88rem;resize:none" placeholder="วิธีแก้ไข / สรุปผลการซ่อม…" oninput="S.resolveForm.solution=this.value">'+esc(S.resolveForm.solution)+'</textarea>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<input class="field" style="padding:12px 14px;font-size:.88rem" placeholder="อะไหล่ที่ใช้" value="'+esc(S.resolveForm.parts)+'" oninput="S.resolveForm.parts=this.value">'
+      + '<input class="field" style="padding:12px 14px;font-size:.88rem" placeholder="เวลา (ชม.)" type="number" min="0" value="'+esc(S.resolveForm.hours)+'" oninput="S.resolveForm.hours=this.value">'
+      + '</div>'
+      + '<button class="btn-primary" style="padding:14px;font-size:.96rem;width:100%" onclick="doResolveTicket(\''+esc(t.id)+'\',\''+sk+'\')">'
+      + (sk === 'outsourced' ? '✔ ปิดงาน (บริษัทแก้ไขแล้ว)' : '✔ ปิดงาน (ซ่อมเสร็จ)')
+      + '</button>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function doAssignTicket(ticketId){
+  var payload = { ticketId: ticketId, techName: S.displayName, changedBy: S.displayName };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(){ toastMsg('รับงาน '+ticketId+' แล้ว'); refreshTickets(); })
+      .withFailureHandler(function(){ toastMsg('เกิดข้อผิดพลาด กรุณาลองใหม่'); })
+      .assignTicket(payload);
+  } else {
+    var all = S.ticketsRaw || MOCK_TICKETS;
+    var t = all.filter(function(x){ return (x.id||x.ticket_id) === ticketId; })[0];
+    if (t){ t.statusKey = 'inprogress'; t.status = 'กำลังซ่อม'; t.tech = S.displayName; }
+    toastMsg('รับงาน '+ticketId+' แล้ว (โหมดสาธิต)');
+    setState({ screen: 'tickets' });
+  }
+}
+
+function doOutsourceTicket(ticketId){
+  var note = (S.resolveForm.vendorNote || '').trim();
+  if (!note){ toastMsg('กรุณาระบุชื่อบริษัท / รายละเอียด'); return; }
+  var payload = { ticketId: ticketId, vendorNote: note, changedBy: S.displayName };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(){ toastMsg('ส่งต่อบริษัทแล้ว — '+ticketId); setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' } }); refreshTickets(); })
+      .withFailureHandler(function(){ toastMsg('เกิดข้อผิดพลาด กรุณาลองใหม่'); })
+      .outsourceTicket(payload);
+  } else {
+    var all = S.ticketsRaw || MOCK_TICKETS;
+    var t = all.filter(function(x){ return (x.id||x.ticket_id) === ticketId; })[0];
+    if (t){ t.statusKey = 'outsourced'; t.status = 'ส่งบริษัทแล้ว'; t.solution = note; }
+    toastMsg('ส่งต่อบริษัทแล้ว (โหมดสาธิต)');
+    setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' }, screen:'tickets' });
+  }
+}
+
+function doResolveTicket(ticketId, prevStatusKey){
+  var sol = (S.resolveForm.solution || '').trim();
+  if (!sol){ toastMsg('กรุณากรอกวิธีแก้ไข / สรุปผลการซ่อม'); return; }
+  var payload = { ticketId: ticketId, solution: sol, parts: S.resolveForm.parts, work_hours: S.resolveForm.hours, changedBy: S.displayName, prevStatusKey: prevStatusKey };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(){ toastMsg('ปิดงาน '+ticketId+' เรียบร้อยแล้ว'); setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' } }); refreshTickets(); })
+      .withFailureHandler(function(){ toastMsg('เกิดข้อผิดพลาด กรุณาลองใหม่'); })
+      .resolveTicket(payload);
+  } else {
+    var all = S.ticketsRaw || MOCK_TICKETS;
+    var t = all.filter(function(x){ return (x.id||x.ticket_id) === ticketId; })[0];
+    if (t){ t.statusKey = 'resolved'; t.status = 'ปิดงานแล้ว'; t.solution = sol; t.parts = S.resolveForm.parts; t.work_hours = S.resolveForm.hours; t.resolved_at = 'ตอนนี้'; }
+    toastMsg('ปิดงาน '+ticketId+' เรียบร้อยแล้ว (โหมดสาธิต)');
+    setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' }, screen:'tickets' });
+  }
+}
+
+/* ============================================================
+   QR + SCAN LANDING
+   ============================================================ */
+function scanUrlFor(assetId){
+  if (LIFF_ID) return 'https://liff.line.me/' + LIFF_ID + '?asset=' + encodeURIComponent(assetId);
+  return (location.origin + location.pathname) + '?asset=' + encodeURIComponent(assetId);
+}
+function qrBox(assetId){
+  var src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=0&data=' + encodeURIComponent(scanUrlFor(assetId));
+  return '<div style="width:140px;height:140px;padding:11px;background:#fff;border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center"><img src="'+src+'" alt="QR '+esc(assetId)+'" style="width:100%;height:100%;object-fit:contain"></div>';
+}
+
+function routeScan(assetId){
+  S.scanAsset = assetId;
+  if (hasBackend()){
+    setState({ scanLoading:true });
+    google.script.run
+      .withSuccessHandler(handleScanResult)
+      .withFailureHandler(function(){ setState({ scanLoading:false, screen:'dashboard' }); toastMsg('โหลดข้อมูลอุปกรณ์ไม่สำเร็จ'); })
+      .getAssetEntry(assetId);
+  } else {
+    var mock   = MOCK_TICKETS.filter(function(t){ return (t.dev||'').indexOf(assetId) === 0; });
+    var active = mock.filter(function(t){ return t.statusKey !== 'resolved'; })[0];
+    handleScanResult({ ok:true, asset:{ id:assetId, name:(mock[0] ? mock[0].dev.split(' · ')[1] : assetId), location:(mock[0]?mock[0].place:'') }, activeTicket: active || null });
+  }
+}
+function handleScanResult(res){
+  S.scanLoading = false;
+  if (!res || !res.ok){ toastMsg((res && res.error) || 'ไม่พบอุปกรณ์'); setState({ screen:'dashboard' }); return; }
+  if (res.activeTicket){
+    // มีงานที่ยังไม่ปิด → ไปหน้าสถานะของงานนั้น
+    S.scanAssetInfo = res.asset;
+    setState({ screen:'detail', activeTicketId:res.activeTicket.id });
+    return;
+  }
+  setState({ scanAssetInfo:res.asset, category:'', desc:'', attach:0, screen:'scan' });
+}
+
+function viewScanLanding(){
+  var a = S.scanAssetInfo || { id:S.scanAsset, name:'', location:'' };
+  var canSubmit = !!S.category && S.desc.trim().length > 0;
+  var chips = CATEGORIES.map(function(m){
+    var on = S.category === m.key;
+    return '<button onclick="pickCategory(\''+m.key+'\')" style="border:1.5px solid '+(on?'var(--accent)':'var(--border)')+';background:'+(on?'var(--grad-tint-pine)':'rgba(255,255,255,0.7)')+';color:'+(on?'var(--accent-strong)':'var(--ink-700)')+';border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:var(--fw-semibold);font-size:.9rem">'+esc(m.th)+'</button>';
+  }).join('');
+
+  return '<section style="animation:riseIn .6s var(--ease) both"><div style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:20px">'
+    + '<div class="glass" style="padding:22px 24px;display:flex;align-items:center;gap:16px">'
+    +   '<div style="width:48px;height:48px;flex:0 0 auto;border-radius:13px;background:var(--grad-tint-pine);border:1px solid rgba(37,102,91,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem">📷</div>'
+    +   '<div style="flex:1;min-width:0"><div class="eyebrow" style="color:var(--accent-strong)">สแกน QR สำเร็จ</div>'
+    +     '<div style="font-weight:var(--fw-bold);font-size:1.05rem">'+esc(a.id)+' · '+esc(a.name)+'</div>'
+    +     (a.location ? '<div style="font-size:.84rem;color:var(--text-muted)">'+esc(a.location)+'</div>' : '')
+    +   '</div></div>'
+    + '<div class="glass" style="padding:28px 30px;display:flex;flex-direction:column;gap:20px">'
+    +   '<div style="display:grid;gap:10px"><label class="label">ประเภทงานที่ต้องการแจ้ง</label><div style="display:flex;gap:10px;flex-wrap:wrap">'+chips+'</div></div>'
+    +   '<div style="display:grid;gap:8px"><label class="label">รายละเอียดปัญหา</label>'
+    +     '<textarea class="field" rows="4" oninput="S.desc=this.value;refreshScanSubmit()" placeholder="อธิบายอาการที่พบ…">'+esc(S.desc)+'</textarea></div>'
+    +   '<div style="border-top:1px solid var(--line);padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">'
+    +     '<span id="scan-hint" style="font-size:.84rem;color:var(--text-muted)">'+(canSubmit?'พร้อมส่งข้อมูลแล้ว':'เลือกประเภทและกรอกรายละเอียดก่อนส่ง')+'</span>'
+    +     '<button id="scan-submit" class="btn-primary" style="font-size:1rem;padding:15px 30px" '+(canSubmit?'':'disabled')+' onclick="submitReport()">ส่งคำขอแจ้งซ่อม</button>'
+    +   '</div></div>'
+    + '</div></section>';
+}
+function refreshScanSubmit(){
+  var can = !!S.category && S.desc.trim().length > 0;
+  var btn = document.getElementById('scan-submit'), hint = document.getElementById('scan-hint');
+  if (btn) btn.disabled = !can;
+  if (hint) hint.textContent = can ? 'พร้อมส่งข้อมูลแล้ว' : 'เลือกประเภทและกรอกรายละเอียดก่อนส่ง';
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function loadBootData(cb){
+  if (!hasBackend()){ S.loading = false; if (cb) cb(); return; }
+  google.script.run
+    .withSuccessHandler(function(data){
+      S.ticketsRaw = (data && data.tickets) || null;
+      S.loanRaw    = (data && data.loans) || null;
+      if (data && data.devices && data.devices.length)
+        S.deviceRegistry = data.devices.map(function(d){ return { id:String(d.id), name:String(d.name) }; });
+      S.loading = false; if (cb) cb(); render();
+    })
+    .withFailureHandler(function(){ S.loading = false; if (cb) cb(); render(); })
+    .getBootData();
+}
+
+function boot(){
+  S.scanAsset = ASSET_PARAM || '';
+
+  if (liffEnabled()){
+    S.booting = true; render();
+    liff.init({ liffId: LIFF_ID }).then(function(){
+      if (!liff.isLoggedIn()){ liff.login(); return; }
+      return liff.getProfile().then(function(p){
+        LINE.userId = p.userId; LINE.profile = p;
+        google.script.run
+          .withSuccessHandler(function(res){
+            S.booting = false;
+            if (res && res.ok){
+              S.loggedIn = true; S.displayName = res.name || p.displayName;
+              S.role = res.role || 'staff'; S.department = res.department || '';
+              S.lineUserId = res.userID || p.userId;
+              loadBootData(function(){
+                if (S.scanAsset) routeScan(S.scanAsset);
+                else { S.screen = 'dashboard'; render(); }
+                fetchAlerts();
+              });
+            } else if (res && res.noAccess){ S.noAccess = true; render(); }
+            else { S.needRegister = true; render(); }
+          })
+          .withFailureHandler(function(){ S.booting = false; toastMsg('เชื่อมต่อระบบไม่สำเร็จ'); render(); })
+          .loginByLine(p.userId);
+      });
+    }).catch(function(){ S.booting = false; toastMsg('เริ่ม LINE LIFF ไม่สำเร็จ'); render(); });
+  } else {
+    /* โหมดสาธิต — แสดงหน้าเลือกบทบาท */
+    S.booting = false;
+    loadBootData();
+    render();
+  }
+  render();
+}
+boot();
+</script>
+</body>
+</html>

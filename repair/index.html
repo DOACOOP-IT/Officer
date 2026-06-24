@@ -1440,6 +1440,8 @@ function boot(){
   if (liffEnabled()){
     S.booting = true; render();
     liff.init({ liffId: LIFF_ID }).then(function(){
+      /* LIFF คืนค่า ?asset= จาก liff.state หลัง init เสร็จ — อ่านใหม่ตรงนี้ */
+      S.scanAsset = parseAssetParam() || S.scanAsset;
       if (!liff.isLoggedIn()){ liff.login(); return; }
       return liff.getProfile().then(function(p){
         LINE.userId = p.userId; LINE.profile = p;

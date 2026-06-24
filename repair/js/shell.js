@@ -19,6 +19,46 @@ function go(key){ setState({ screen:key, navOpen:false }); window.scrollTo(0,0);
 function toggleNav(){ setState({ navOpen: !S.navOpen }); }
 function goHome(){ location.href = 'https://doacoop-it.github.io/Officer'; }
 
+/* ===== Bottom tab bar (มือถือ) ===== */
+var BN_ICONS = {
+  home:    '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/>',
+  report:  '<path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L5 16l3 3 4.3-4.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-1.8-1.8z"/>',
+  tickets: '<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.1"/><circle cx="4" cy="12" r="1.1"/><circle cx="4" cy="18" r="1.1"/>',
+  mine:    '<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4.2V3.5h6v.7M9 10h6M9 14h4"/>',
+  more:    '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>'
+};
+function bottomTab(key, label, icon, onClick, active){
+  var on = active != null ? active
+    : (S.screen === key || (key === 'tickets' && S.screen === 'detail') || (key === 'report' && S.screen === 'scan'));
+  var click = onClick || ("go('" + key + "')");
+  return '<button class="'+(on?'on':'')+'" onclick="'+click+'">'
+    + '<span class="bn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg></span>'
+    + esc(label) + '</button>';
+}
+function bottomNav(){
+  var tabs;
+  if (S.role === 'staff'){
+    tabs = bottomTab('dashboard','หน้าแรก',BN_ICONS.home)
+         + bottomTab('report','แจ้งซ่อม',BN_ICONS.report)
+         + bottomTab('mytickets','งานของฉัน',BN_ICONS.mine);
+  } else {
+    tabs = bottomTab('dashboard','แดชบอร์ด',BN_ICONS.home)
+         + bottomTab('tickets','งานซ่อม',BN_ICONS.tickets)
+         + bottomTab('report','แจ้งซ่อม',BN_ICONS.report);
+  }
+  tabs += bottomTab(null,'เพิ่มเติม',BN_ICONS.more,'toggleNav()',!!S.navOpen);
+  return '<nav class="bottom-nav">'+tabs+'</nav>';
+}
+
+/* ===== Greeting header (มือถือ) ===== */
+function mobileGreeting(){
+  var pic = LINE.profile && LINE.profile.pictureUrl;
+  var av  = pic ? '<img src="'+esc(pic)+'" alt="">' : esc((S.displayName||'ผู้').charAt(0));
+  return '<div class="mobile-greeting"><div class="mg-av">'+av+'</div>'
+    + '<div style="line-height:1.3;min-width:0"><div style="font-size:.82rem;color:var(--text-muted)">สวัสดี 👋</div>'
+    + '<div style="font-weight:var(--fw-bold);font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(S.displayName||'ผู้ใช้งาน')+'</div></div></div>';
+}
+
 function viewApp(){
   var body;
   switch (S.screen){
@@ -36,7 +76,7 @@ function viewApp(){
   }
   return ''
   + '<div class="mobile-topbar">'
-  +   '<button onclick="toggleNav()" aria-label="เมนู" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.2rem;line-height:1;color:var(--ink-900)">☰</button>'
+  +   '<div style="width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.78rem">IT</div>'
   +   '<div style="flex:1;min-width:0;font-weight:var(--fw-bold);font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(PAGE_TITLE[S.screen])+'</div>'
   +   '<button onclick="goHome()" aria-label="หน้าหลัก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⌂</button>'
   + '</div>'
@@ -62,6 +102,7 @@ function viewApp(){
   +     '</div>'
   +   '</aside>'
   +   '<main class="content">'
+  +     (S.screen === 'dashboard' ? mobileGreeting() : '')
   +     viewAlertBanner()
   +     '<header class="page-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:26px">'
   +       '<div><div class="eyebrow" style="margin-bottom:7px">IT HELPDESK · 21 มิ.ย. 2569</div>'
@@ -70,6 +111,7 @@ function viewApp(){
   +     '</header>'
   +     body
   +   '</main>'
-  + '</div>';
+  + '</div>'
+  + bottomNav();
 }
 

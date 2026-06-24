@@ -8,6 +8,7 @@ function tone(k){
     success:{ bg:'var(--accent-soft)', fg:'var(--accent-strong)', bd:'rgba(37,102,91,0.16)' },
     warning:{ bg:'var(--warning-soft)', fg:'var(--warning)', bd:'rgba(179,132,44,0.18)' },
     danger: { bg:'var(--danger-soft)', fg:'var(--danger)', bd:'rgba(176,93,70,0.18)' },
+    muted:  { bg:'rgba(104,117,113,0.10)', fg:'var(--ink-500)', bd:'rgba(104,117,113,0.22)' },
   })[k];
 }
 
@@ -71,7 +72,10 @@ var MOCK_LOANS = [
 
 function loanHistory(){
   var raw = (S.loanRaw && S.loanRaw.length) ? S.loanRaw : MOCK_LOANS;
-  return raw.map(function(l){ var tn = tone(l.tone || 'warning'); return { dev:l.dev, by:l.by, from:l.from, to:l.to, status:l.status, bg:tn.bg, fg:tn.fg, bd:tn.bd }; });
+  return raw.map(function(l){
+    var tn = tone(l.tone || 'warning') || tone('warning');
+    return { loan_id:l.loan_id||'', dev:l.dev, by:l.by, from:l.from, to:l.to, status:l.status, statusRaw:l.status, bg:tn.bg, fg:tn.fg, bd:tn.bd };
+  });
 }
 
 var CATEGORIES = [

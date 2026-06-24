@@ -70,6 +70,26 @@ function deleteDevice(id){
   if (hasBackend())
     google.script.run.withFailureHandler(function(){ toastMsg('ลบอุปกรณ์จาก Google Sheet ไม่สำเร็จ'); }).deleteDevice(id);
 }
-function printQr(id){ toastMsg('กำลังสร้างไฟล์ PDF QR สำหรับ '+id+' …'); }
-function printAll(){ toastMsg('กำลังสร้างไฟล์ PDF QR ทั้งหมด '+S.deviceRegistry.length+' ชิ้น …'); }
+function openQrPrint(list){
+  if (!list.length){ toastMsg('ไม่มีอุปกรณ์ให้พิมพ์'); return; }
+  var ep = function(v){ return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var cards = list.map(function(d){
+    var src = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=0&data=' + encodeURIComponent(scanUrlFor(d.id));
+    return '<div class="qrc"><img src="'+src+'" alt="QR '+ep(d.id)+'"><div class="qid">'+ep(d.id)+'</div><div class="qnm">'+ep(d.name)+'</div><div class="qhint">สแกนเพื่อแจ้งซ่อม</div></div>';
+  }).join('');
+  var html = '<!doctype html><html lang="th"><head><meta charset="utf-8"><title>QR อุปกรณ์</title>'
+    + '<style>@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap");'
+    + '*{font-family:\'Sarabun\',sans-serif;box-sizing:border-box;margin:0}body{padding:14mm;color:#1e2b28}'
+    + '.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10mm}'
+    + '.qrc{border:1.5px dashed #b8c2bf;border-radius:10px;padding:8mm 4mm;text-align:center;page-break-inside:avoid;display:flex;flex-direction:column;align-items:center;gap:3mm}'
+    + '.qrc img{width:46mm;height:46mm}'
+    + '.qid{font-weight:800;color:#194940;font-size:15px}.qnm{font-size:12px;color:#444;line-height:1.3}.qhint{font-size:11px;color:#888;margin-top:2mm}'
+    + '@media print{body{padding:8mm}}</style></head>'
+    + '<body onload="setTimeout(function(){window.print()},600)"><div class="grid">'+cards+'</div></body></html>';
+  var w = window.open('', '_blank');
+  if (!w){ toastMsg('กรุณาอนุญาต pop-up เพื่อพิมพ์ PDF'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+}
+function printQr(id){ var d = S.deviceRegistry.filter(function(x){ return x.id === id; })[0]; if (d) openQrPrint([d]); }
+function printAll(){ openQrPrint(S.deviceRegistry); }
 

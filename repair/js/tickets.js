@@ -35,7 +35,7 @@ function ticketFilterBar(){
 function viewTickets(){
   var all = allTickets();
   var cnt = function(k){ return all.filter(function(t){ return t.statusKey === k; }).length; };
-  var tabs = [['all','ทั้งหมด',all.length],['pending','รอรับงาน',cnt('pending')],['inprogress','กำลังซ่อม',cnt('inprogress')],['outsourced','ส่งบริษัทแล้ว',cnt('outsourced')],['resolved','ปิดงานแล้ว',cnt('resolved')]];
+  var tabs = [['all','ทั้งหมด',all.length],['pending','รอรับงาน',cnt('pending')],['inprogress','กำลังซ่อม',cnt('inprogress')],['outsourced','ส่งบริษัทแล้ว',cnt('outsourced')],['resolved','ปิดงานแล้ว',cnt('resolved')],['cancelled','ยกเลิก',cnt('cancelled')]];
   var tabsHtml = tabs.map(function(t){
     var on = S.ticketFilter === t[0];
     var bg = on ? 'var(--grad-tint-pine)' : 'rgba(255,255,255,0.7)';
@@ -73,6 +73,22 @@ function ticketRowsHtml(){
 function applyTicketSearch(){
   var el = document.getElementById('ticket-rows');
   if (el) el.innerHTML = ticketRowsHtml();
+}
+
+function doCancelTicket(id){
+  if (!window.confirm('ยืนยันยกเลิกงาน ' + id + ' ?')) return;
+  var payload = { ticketId:id, role:S.role, userId:S.lineUserId, changedBy:S.displayName };
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(res){
+        if (res && res.ok){ toastMsg('ยกเลิกงาน ' + id + ' แล้ว'); setState({ screen:(S.role==='staff'?'mytickets':'tickets') }); refreshTickets(); }
+        else toastMsg((res && res.error) || 'ยกเลิกไม่สำเร็จ');
+      })
+      .withFailureHandler(function(){ toastMsg('ยกเลิกไม่สำเร็จ กรุณาลองใหม่'); })
+      .cancelTicket(payload);
+  } else {
+    toastMsg('ยกเลิกงานแล้ว (โหมดสาธิต)'); setState({ screen:'mytickets' });
+  }
 }
 
 function setFilter(k){ setState({ ticketFilter:k }); }
@@ -136,8 +152,8 @@ function viewDetail(){
   var t = all.filter(function(x){ return x.id === S.activeTicketId; })[0] || all[0];
 
   /* ไทม์ไลน์จากประวัติจริง (repair_history) */
-  var HIST_LABEL = { '':'เปิดใบแจ้งซ่อม', pending:'รอรับงาน', inprogress:'รับงาน/กำลังซ่อม', outsourced:'ส่งต่อบริษัท', resolved:'ปิดงาน' };
-  var HIST_COLOR = { pending:'var(--warning)', inprogress:'var(--accent)', outsourced:'var(--warning)', resolved:'var(--accent)' };
+  var HIST_LABEL = { '':'เปิดใบแจ้งซ่อม', pending:'รอรับงาน', inprogress:'รับงาน/กำลังซ่อม', outsourced:'ส่งต่อบริษัท', resolved:'ปิดงาน', cancelled:'ยกเลิกงาน' };
+  var HIST_COLOR = { pending:'var(--warning)', inprogress:'var(--accent)', outsourced:'var(--warning)', resolved:'var(--accent)', cancelled:'var(--danger)' };
   var timelineHtml;
   if (S.detailHistory == null){
     timelineHtml = '<div style="color:var(--text-muted);font-size:.88rem">กำลังโหลดประวัติ…</div>';
@@ -160,8 +176,17 @@ function viewDetail(){
     ? '<a href="'+esc(photoUrl)+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-md);background:var(--accent-soft);border:1px solid rgba(37,102,91,0.18);text-decoration:none;color:var(--accent-strong)"><span style="font-size:1.4rem">🖼️</span><span style="flex:1;font-weight:var(--fw-semibold)">เปิดดูรูปที่แนบ (Google Drive)</span><span style="font-size:1.1rem">↗</span></a>'
     : '<div style="color:var(--text-muted);font-size:.88rem">ไม่มีรูปแนบ</div>';
 
+  var canCancel = (t.statusKey !== 'resolved' && t.statusKey !== 'cancelled') && (
+    (S.role === 'admin' || S.role === 'tech') ||
+    (t.requester_id === S.lineUserId && t.statusKey === 'pending')
+  );
+  var backScreen = (S.role === 'staff') ? 'mytickets' : 'tickets';
+
   return '<section style="animation:riseIn .6s var(--ease) both">'
-  + '<button class="btn-ghost" style="padding:9px 18px;font-size:.88rem;margin-bottom:18px" onclick="go(\'tickets\')">← กลับไปรายการงาน</button>'
+  + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap">'
+  +   '<button class="btn-ghost" style="padding:9px 18px;font-size:.88rem" onclick="go(\''+backScreen+'\')">← กลับ</button>'
+  +   (canCancel ? '<button style="border:1px solid rgba(176,93,70,0.3);background:var(--danger-soft);color:var(--danger);border-radius:999px;padding:9px 18px;font-size:.85rem;font-weight:var(--fw-semibold);cursor:pointer" onclick="doCancelTicket(\''+esc(t.id)+'\')">ยกเลิกงาน</button>' : '')
+  + '</div>'
   + '<div class="detailgrid" style="display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start">'
   +   '<div style="display:flex;flex-direction:column;gap:22px">'
   +     '<div class="glass" style="padding:26px 28px">'

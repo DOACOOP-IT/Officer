@@ -29,7 +29,7 @@ function _apiCall(action, args, onOk, onErr){
 /* Shim: ให้โค้ดเดิม google.script.run.<action>() วิ่งผ่าน fetch */
 var _API_ACTIONS = ['getBootData','loginByLine','loginByPassword','getAssetEntry','createTicket','assignTicket',
   'outsourceTicket','resolveTicket','getMyTickets','getAlerts','saveDevice','deleteDevice',
-  'submitLoan','approveLoan','rejectLoan','returnLoan','getTicketHistory','getAssetTickets','getTechs','ping'];
+  'submitLoan','approveLoan','rejectLoan','returnLoan','cancelTicket','getTicketHistory','getAssetTickets','getTechs','ping'];
 function _makeRunner(){
   var ok = null, err = null;
   var runner = {

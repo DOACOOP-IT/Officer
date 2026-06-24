@@ -27,7 +27,7 @@ var MOCK_TICKETS = [
 ];
 
 /* Decorate a raw ticket row with presentation values (badge tones by status). */
-var STATUS_TONE = { pending:'warning', inprogress:'success', outsourced:'warning', resolved:'success' };
+var STATUS_TONE = { pending:'warning', inprogress:'success', outsourced:'warning', resolved:'success', cancelled:'muted' };
 function decorateTicket(t){
   var tn = tone(STATUS_TONE[t.statusKey] || 'success');
   return { id:t.id, dev:t.dev, by:t.by, tech:t.tech, status:t.status,

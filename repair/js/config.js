@@ -11,6 +11,7 @@ function _apiPayload(action, args){
     case 'deleteDevice':     return { id: args[0] };
     case 'getMyTickets':     return { lineUserId: args[0] };
     case 'getTicketHistory': return { ticketId: args[0] };
+    case 'getAssetTickets':  return { assetId: args[0] };
     case 'getAlerts':        return { role: args[0], department: args[1], lineUserId: args[2] };
     default:                 return args[0] || {};
   }
@@ -28,7 +29,7 @@ function _apiCall(action, args, onOk, onErr){
 /* Shim: ให้โค้ดเดิม google.script.run.<action>() วิ่งผ่าน fetch */
 var _API_ACTIONS = ['getBootData','loginByLine','loginByPassword','getAssetEntry','createTicket','assignTicket',
   'outsourceTicket','resolveTicket','getMyTickets','getAlerts','saveDevice','deleteDevice',
-  'submitLoan','approveLoan','rejectLoan','returnLoan','getTicketHistory','ping'];
+  'submitLoan','approveLoan','rejectLoan','returnLoan','getTicketHistory','getAssetTickets','getTechs','ping'];
 function _makeRunner(){
   var ok = null, err = null;
   var runner = {

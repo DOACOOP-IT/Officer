@@ -20,7 +20,13 @@ function viewDetailActions(t){
   var html = '<div class="glass" style="padding:22px 24px;display:flex;flex-direction:column;gap:12px"><div class="eyebrow">การดำเนินงาน</div>';
 
   if (sk === 'pending'){
-    html += '<button class="btn-primary" style="padding:14px;font-size:.96rem;width:100%" onclick="doAssignTicket(\''+esc(t.id)+'\')">✔ รับงานซ่อม</button>';
+    var techList = (S.techs && S.techs.length) ? S.techs : [S.displayName];
+    if (techList.indexOf(S.displayName) < 0) techList = [S.displayName].concat(techList);
+    var cur = S.assignTech || S.displayName;
+    var opts = techList.map(function(n){ return '<option value="'+esc(n)+'"'+(cur===n?' selected':'')+'>'+esc(n)+(n===S.displayName?' (ฉัน)':'')+'</option>'; }).join('');
+    html += '<label class="label">มอบหมายให้ช่าง</label>'
+      + '<select class="field" style="padding:12px 14px;font-size:.9rem" onchange="S.assignTech=this.value">'+opts+'</select>'
+      + '<button class="btn-primary" style="padding:14px;font-size:.96rem;width:100%" onclick="doAssignTicket(\''+esc(t.id)+'\')">✔ รับงาน / มอบหมาย</button>';
   }
 
   if (sk === 'inprogress'){
@@ -40,6 +46,7 @@ function viewDetailActions(t){
       + '<input class="field" style="padding:12px 14px;font-size:.88rem" placeholder="อะไหล่ที่ใช้" value="'+esc(S.resolveForm.parts)+'" oninput="S.resolveForm.parts=this.value">'
       + '<input class="field" style="padding:12px 14px;font-size:.88rem" placeholder="เวลา (ชม.)" type="number" min="0" value="'+esc(S.resolveForm.hours)+'" oninput="S.resolveForm.hours=this.value">'
       + '</div>'
+      + resolvePhotoSection()
       + '<button class="btn-primary" style="padding:14px;font-size:.96rem;width:100%" onclick="doResolveTicket(\''+esc(t.id)+'\',\''+sk+'\')">'
       + (sk === 'outsourced' ? '✔ ปิดงาน (บริษัทแก้ไขแล้ว)' : '✔ ปิดงาน (ซ่อมเสร็จ)')
       + '</button>';
@@ -49,19 +56,51 @@ function viewDetailActions(t){
   return html;
 }
 
+/* ===== รูปหลังซ่อม (แนบตอนปิดงาน) ===== */
+function resolvePhotoSection(){
+  var photos = S.resolvePhotos || [];
+  var thumbs = photos.map(function(p, i){
+    return '<div style="position:relative;width:64px;height:64px;flex:0 0 auto;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--line)">'
+      + '<img src="'+p.dataUrl+'" style="width:100%;height:100%;object-fit:cover">'
+      + '<button onclick="removeResolvePhoto('+i+')" style="position:absolute;top:1px;right:1px;width:18px;height:18px;border:0;border-radius:999px;background:rgba(30,43,40,0.7);color:#fff;cursor:pointer;font-size:.72rem;line-height:1">×</button></div>';
+  }).join('');
+  var addBtn = photos.length < 5
+    ? '<label style="width:64px;height:64px;flex:0 0 auto;border:1px dashed rgba(37,102,91,0.4);background:var(--accent-soft);border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent-strong);font-size:1.3rem">+<input type="file" accept="image/*" multiple style="display:none" onchange="addResolvePhotos(this.files)"></label>'
+    : '';
+  return '<div style="display:grid;gap:6px"><label class="label" style="font-size:.82rem">รูปหลังซ่อม ('+photos.length+'/5)</label><div style="display:flex;gap:8px;flex-wrap:wrap">'+thumbs+addBtn+'</div></div>';
+}
+function addResolvePhotos(files){
+  if (!files || !files.length) return;
+  S.resolvePhotos = S.resolvePhotos || [];
+  var room = 5 - S.resolvePhotos.length;
+  if (room <= 0){ toastMsg('แนบรูปได้สูงสุด 5 รูป'); return; }
+  var arr = Array.prototype.slice.call(files).slice(0, room);
+  var pending = arr.length, done = function(){ pending--; if (pending<=0) render(); };
+  arr.forEach(function(f){
+    if (!/^image\//.test(f.type)){ toastMsg('แนบได้เฉพาะรูปภาพ'); done(); return; }
+    if (f.size > 8*1024*1024){ toastMsg('รูปใหญ่เกิน 8MB'); done(); return; }
+    var rd = new FileReader();
+    rd.onload = function(e){ S.resolvePhotos.push({ name:f.name, dataUrl:e.target.result }); done(); };
+    rd.onerror = function(){ done(); };
+    rd.readAsDataURL(f);
+  });
+}
+function removeResolvePhoto(i){ S.resolvePhotos.splice(i,1); render(); }
+
 function doAssignTicket(ticketId){
-  var payload = { ticketId: ticketId, techName: S.displayName, changedBy: S.displayName };
+  var tech = S.assignTech || S.displayName;
+  var payload = { ticketId: ticketId, techName: tech, changedBy: S.displayName };
   if (hasBackend()){
     google.script.run
-      .withSuccessHandler(function(){ toastMsg('รับงาน '+ticketId+' แล้ว'); refreshTickets(); })
+      .withSuccessHandler(function(){ toastMsg('มอบหมายงาน '+ticketId+' ให้ '+tech+' แล้ว'); setState({ assignTech:'' }); refreshTickets(); })
       .withFailureHandler(function(){ toastMsg('เกิดข้อผิดพลาด กรุณาลองใหม่'); })
       .assignTicket(payload);
   } else {
     var all = S.ticketsRaw || MOCK_TICKETS;
     var t = all.filter(function(x){ return (x.id||x.ticket_id) === ticketId; })[0];
-    if (t){ t.statusKey = 'inprogress'; t.status = 'กำลังซ่อม'; t.tech = S.displayName; }
-    toastMsg('รับงาน '+ticketId+' แล้ว (โหมดสาธิต)');
-    setState({ screen: 'tickets' });
+    if (t){ t.statusKey = 'inprogress'; t.status = 'กำลังซ่อม'; t.tech = tech; }
+    toastMsg('มอบหมายงานแล้ว (โหมดสาธิต)');
+    setState({ assignTech:'', screen: 'tickets' });
   }
 }
 
@@ -86,10 +125,11 @@ function doOutsourceTicket(ticketId){
 function doResolveTicket(ticketId, prevStatusKey){
   var sol = (S.resolveForm.solution || '').trim();
   if (!sol){ toastMsg('กรุณากรอกวิธีแก้ไข / สรุปผลการซ่อม'); return; }
-  var payload = { ticketId: ticketId, solution: sol, parts: S.resolveForm.parts, work_hours: S.resolveForm.hours, changedBy: S.displayName, prevStatusKey: prevStatusKey };
+  var payload = { ticketId: ticketId, solution: sol, parts: S.resolveForm.parts, work_hours: S.resolveForm.hours, changedBy: S.displayName, prevStatusKey: prevStatusKey,
+                  photos:(S.resolvePhotos || []).map(function(p){ return { name:p.name, dataUrl:p.dataUrl }; }) };
   if (hasBackend()){
     google.script.run
-      .withSuccessHandler(function(){ toastMsg('ปิดงาน '+ticketId+' เรียบร้อยแล้ว'); setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' } }); refreshTickets(); })
+      .withSuccessHandler(function(){ toastMsg('ปิดงาน '+ticketId+' เรียบร้อยแล้ว'); setState({ resolveForm:{ solution:'', parts:'', hours:'', vendorNote:'' }, resolvePhotos:[] }); refreshTickets(); })
       .withFailureHandler(function(){ toastMsg('เกิดข้อผิดพลาด กรุณาลองใหม่'); })
       .resolveTicket(payload);
   } else {

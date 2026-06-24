@@ -1,0 +1,16 @@
+{
+  "name": "ระบบแจ้งซ่อม IT",
+  "short_name": "แจ้งซ่อม IT",
+  "description": "ระบบแจ้งซ่อมและติดตามงานซ่อม IT — สอ.กรมวิชาการเกษตร",
+  "start_url": ".",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4efe7",
+  "theme_color": "#25665b",
+  "lang": "th",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

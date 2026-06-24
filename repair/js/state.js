@@ -8,6 +8,8 @@ var S = {
   lineUserId: '', booting: true, needRegister: false, noAccess: false,
   scanAsset: '', scanAssetInfo: null, scanLoading: false, scanPhotos: [],
   assets: [], reportDevice: '', detailHistory: null, filterTech: 'all', filterCategory: 'all',
+  resolvePhotos: [], assignTech: '', techs: [], searchQuery: '',
+  assetHist: null, assetHistId: '', assetHistName: '',
   alerts: [], alertDismissed: false, navOpen: false,
   resolveForm: { solution: '', parts: '', hours: '', vendorNote: '' },
   category: '',

@@ -10,10 +10,18 @@ function loadBootData(cb){
       S.assets     = (data && data.assets) || S.assets || [];
       if (data && data.devices && data.devices.length)
         S.deviceRegistry = data.devices.map(function(d){ return { id:String(d.id), name:String(d.name) }; });
-      S.loading = false; if (cb) cb(); render();
+      S.loading = false; if (cb) cb(); fetchTechs(); render();
     })
     .withFailureHandler(function(){ S.loading = false; if (cb) cb(); render(); })
     .getBootData();
+}
+
+function fetchTechs(){
+  if (!hasBackend()) return;
+  google.script.run
+    .withSuccessHandler(function(r){ if (r && r.ok) S.techs = r.techs || []; })
+    .withFailureHandler(function(){})
+    .getTechs();
 }
 
 function boot(){

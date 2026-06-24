@@ -43,16 +43,17 @@ function buildMatrix(seed){
 /* ============================================================
    LINE CHART (inline SVG, no library)
    ============================================================ */
-function lineChart(height){
+function lineChart(height, data){
+  var T = (data && data.length) ? data : TREND;
   var w = 760, h = height || 260, padL = 36, padR = 18, padT = 18, padB = 30;
-  var vals = TREND.map(function(t){ return t.v; });
-  var max = Math.max.apply(null, vals) * 1.15, min = 0;
+  var vals = T.map(function(t){ return t.v; });
+  var max = (Math.max.apply(null, vals) || 1) * 1.15, min = 0;
   var iw = w - padL - padR, ih = h - padT - padB;
-  var xAt = function(i){ return padL + (iw * i / (TREND.length - 1)); };
+  var xAt = function(i){ return padL + (iw * i / (T.length - 1)); };
   var yAt = function(v){ return padT + ih - ((v - min) / (max - min)) * ih; };
-  var pts = TREND.map(function(t, i){ return xAt(i) + ',' + yAt(t.v); });
+  var pts = T.map(function(t, i){ return xAt(i) + ',' + yAt(t.v); });
   var line = 'M' + pts.join(' L');
-  var area = line + ' L' + xAt(TREND.length-1) + ',' + (padT+ih) + ' L' + xAt(0) + ',' + (padT+ih) + ' Z';
+  var area = line + ' L' + xAt(T.length-1) + ',' + (padT+ih) + ' L' + xAt(0) + ',' + (padT+ih) + ' Z';
   var grid = '', g, gy, gv;
   for (g = 0; g <= 4; g++){
     gv = max * g / 4; gy = yAt(gv);
@@ -60,7 +61,7 @@ function lineChart(height){
     grid += '<text x="'+(padL-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="11" fill="var(--ink-500)">'+Math.round(gv)+'</text>';
   }
   var dots = '', labels = '';
-  TREND.forEach(function(t, i){
+  T.forEach(function(t, i){
     dots += '<circle cx="'+xAt(i)+'" cy="'+yAt(t.v)+'" r="4.5" fill="#fff" stroke="var(--accent)" stroke-width="2.5"/>';
     labels += '<text x="'+xAt(i)+'" y="'+(h-9)+'" text-anchor="middle" font-size="12" fill="var(--ink-500)">'+t.m+'</text>';
   });

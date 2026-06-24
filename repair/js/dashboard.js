@@ -8,6 +8,22 @@ function statCard(grad, label, value, foot, footColor){
     + '<span style="display:block;margin-top:8px;font-size:.84rem;color:'+footColor+';font-weight:var(--fw-semibold)">'+esc(foot)+'</span></div>';
 }
 
+var THAI_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function parseThaiYM(s){
+  var p = String(s||'').split(' ');
+  if (p.length < 3) return null;
+  var mi = THAI_MON.indexOf(p[1]); var y = parseInt(p[2],10);
+  if (mi < 0 || isNaN(y)) return null;
+  return { y:y, m:mi };
+}
+function computeTrend(allT){
+  var now = new Date(), curY = now.getFullYear()+543, curM = now.getMonth();
+  var buckets = [];
+  for (var i=5;i>=0;i--){ var m=curM-i, y=curY; while(m<0){ m+=12; y--; } buckets.push({ y:y, m:m, v:0 }); }
+  allT.forEach(function(t){ var pm=parseThaiYM(t.at); if(!pm)return; buckets.forEach(function(b){ if(b.y===pm.y&&b.m===pm.m) b.v++; }); });
+  return buckets.map(function(b){ return { m:THAI_MON[b.m], v:b.v }; });
+}
+
 function viewDashboard(){
   var allT = allTickets();
   var c = function(k){ return allT.filter(function(t){ return t.statusKey === k; }).length; };
@@ -39,7 +55,7 @@ function viewDashboard(){
   +     '<div><div class="eyebrow">TREND · 6 เดือน</div><h2 style="margin:6px 0 0;font-size:var(--text-h3);font-weight:var(--fw-bold)">แนวโน้มงานซ่อม</h2></div>'
   +     '<div style="display:flex;gap:18px;font-size:.84rem;color:var(--text-muted)"><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">'+allT.length+'</strong> งานทั้งหมด</span><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">'+c('resolved')+'</strong> ปิดงานแล้ว</span></div>'
   +   '</div>'
-  +   '<div style="margin-top:8px">'+lineChart(260)+'</div>'
+  +   '<div style="margin-top:8px">'+lineChart(260, computeTrend(allT))+'</div>'
   + '</div>'
   + '<div class="glass" style="padding:26px 28px">'
   +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h2 style="margin:0;font-size:var(--text-h3);font-weight:var(--fw-bold)">งานซ่อมล่าสุด</h2><span style="font-size:.86rem;color:var(--accent);font-weight:var(--fw-semibold);cursor:pointer" onclick="go(\'tickets\')">ดูทั้งหมด →</span></div>'

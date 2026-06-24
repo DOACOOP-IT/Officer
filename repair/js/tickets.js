@@ -2,10 +2,15 @@
    TICKET LIST
    ============================================================ */
 function filteredTickets(){
+  var q = (S.searchQuery || '').trim().toLowerCase();
   return allTickets().filter(function(t){
     if (S.ticketFilter !== 'all'   && t.statusKey !== S.ticketFilter) return false;
     if (S.filterTech !== 'all'     && t.tech      !== S.filterTech)   return false;
     if (S.filterCategory !== 'all' && t.category  !== S.filterCategory) return false;
+    if (q){
+      var hay = (t.id+' '+t.dev+' '+t.by+' '+t.tech+' '+t.place).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
     return true;
   });
 }
@@ -18,10 +23,12 @@ function ticketFilterBar(){
   all.forEach(function(t){ if (t.category && cats.indexOf(t.category) < 0) cats.push(t.category); });
   var techOpts = '<option value="all">ช่างทั้งหมด</option>' + techs.map(function(x){ return '<option value="'+esc(x)+'"'+(S.filterTech===x?' selected':'')+'>'+esc(x)+'</option>'; }).join('');
   var catOpts  = '<option value="all">ทุกประเภท</option>' + cats.map(function(x){ return '<option value="'+esc(x)+'"'+(S.filterCategory===x?' selected':'')+'>'+esc(CAT_LABEL[x]||x)+'</option>'; }).join('');
+  var hasFilter = (S.filterTech!=='all'||S.filterCategory!=='all'||(S.searchQuery||'').trim());
   return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">'
+    + '<input class="field" id="ticket-search" style="flex:1;min-width:180px;padding:9px 14px;font-size:.88rem" placeholder="🔍 ค้นหา หมายเลขงาน / อุปกรณ์ / ผู้แจ้ง…" value="'+esc(S.searchQuery||'')+'" oninput="S.searchQuery=this.value;applyTicketSearch()">'
     + '<select class="field" style="width:auto;padding:9px 14px;font-size:.88rem" onchange="setState({filterTech:this.value})">'+techOpts+'</select>'
     + '<select class="field" style="width:auto;padding:9px 14px;font-size:.88rem" onchange="setState({filterCategory:this.value})">'+catOpts+'</select>'
-    + ((S.filterTech!=='all'||S.filterCategory!=='all') ? '<button class="btn-ghost" style="padding:9px 16px;font-size:.85rem" onclick="setState({filterTech:\'all\',filterCategory:\'all\'})">ล้างตัวกรอง</button>' : '')
+    + (hasFilter ? '<button class="btn-ghost" style="padding:9px 16px;font-size:.85rem" onclick="setState({filterTech:\'all\',filterCategory:\'all\',searchQuery:\'\'})">ล้างตัวกรอง</button>' : '')
     + '</div>';
 }
 
@@ -39,15 +46,6 @@ function viewTickets(){
       + esc(t[1]) + '<span style="background:rgba(27,40,38,0.08);border-radius:999px;padding:1px 9px;font-size:.78rem;font-weight:var(--fw-bold)">'+t[2]+'</span></button>';
   }).join('');
 
-  var rows = filteredTickets().map(function(t){
-    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
-      + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
-      + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
-      + '<span style="color:var(--text-muted)">'+esc(t.by)+'</span>'
-      + '<span style="color:var(--text-muted)">'+esc(t.tech)+'</span>'
-      + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
-  }).join('');
-
   return '<section style="animation:riseIn .6s var(--ease) both">'
   + '<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">'+tabsHtml
   +   '<div style="margin-left:auto;display:flex;gap:8px">'
@@ -57,8 +55,24 @@ function viewTickets(){
   + ticketFilterBar()
   + '<div class="glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
   +   '<div style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span style="text-align:right">สถานะ</span></div>'
-  +   rows
+  +   '<div id="ticket-rows">'+ticketRowsHtml()+'</div>'
   + '</div></div></div></section>';
+}
+
+function ticketRowsHtml(){
+  var rows = filteredTickets().map(function(t){
+    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
+      + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
+      + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.by)+'</span>'
+      + '<span style="color:var(--text-muted)">'+esc(t.tech)+'</span>'
+      + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
+  }).join('');
+  return rows || '<div style="padding:30px;text-align:center;color:var(--text-muted)">ไม่พบงานที่ตรงกับเงื่อนไข</div>';
+}
+function applyTicketSearch(){
+  var el = document.getElementById('ticket-rows');
+  if (el) el.innerHTML = ticketRowsHtml();
 }
 
 function setFilter(k){ setState({ ticketFilter:k }); }

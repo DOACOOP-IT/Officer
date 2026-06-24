@@ -6,7 +6,7 @@ var S = {
   loggedIn: false, username: '', password: '', loginError: '', loginLoading: false, displayName: '', role: '', department: '',
   demoRole: 'admin',
   lineUserId: '', booting: true, needRegister: false, noAccess: false,
-  scanAsset: '', scanAssetInfo: null, scanLoading: false,
+  scanAsset: '', scanAssetInfo: null, scanLoading: false, scanPhotos: [],
   alerts: [], alertDismissed: false, navOpen: false,
   resolveForm: { solution: '', parts: '', hours: '', vendorNote: '' },
   category: '',

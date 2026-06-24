@@ -9,7 +9,13 @@ function statCard(grad, label, value, foot, footColor){
 }
 
 function viewDashboard(){
-  var tk = allTickets().slice(0,5);
+  var allT = allTickets();
+  var c = function(k){ return allT.filter(function(t){ return t.statusKey === k; }).length; };
+  var openCnt = c('pending') + c('inprogress') + c('outsourced');
+  var loans = (typeof loanHistory === 'function') ? loanHistory() : [];
+  var loanActive = loans.filter(function(l){ return l.statusRaw !== 'คืนแล้ว' && l.statusRaw !== 'ปฏิเสธ'; }).length;
+  var loanOverdue = loans.filter(function(l){ return l.statusRaw === 'เกินกำหนดคืน'; }).length;
+  var tk = allT.slice(0,5);
   var rows = tk.map(function(t){
     return '<div style="display:grid;grid-template-columns:1.15fr 1.9fr 1fr 1.15fr 1fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem">'
       + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
@@ -23,15 +29,15 @@ function viewDashboard(){
   + mLauncher()
   + '<div class="desktop-dash" style="display:flex;flex-direction:column;gap:22px">'
   + '<div class="statgrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">'
-  +   statCard('linear-gradient(135deg,rgba(229,240,237,0.92),rgba(255,255,255,0.84))','งานที่เปิดอยู่','18','+3 จากสัปดาห์ก่อน','var(--accent-strong)')
-  +   statCard('linear-gradient(135deg,rgba(218,236,229,0.92),rgba(255,255,255,0.84))','ปิดงานเดือนนี้','9','งานซ่อมที่เสร็จแล้ว','var(--accent-strong)')
-  +   statCard('linear-gradient(135deg,rgba(250,244,231,0.92),rgba(255,255,255,0.84))','ยืม–คืนค้างอยู่','5','เกินกำหนดคืน 1 รายการ','var(--warning)')
-  +   statCard('linear-gradient(135deg,rgba(247,236,231,0.92),rgba(255,255,255,0.84))','สัญญาใกล้หมดอายุ','3','ภายใน 30 วัน','var(--danger)')
+  +   statCard('linear-gradient(135deg,rgba(229,240,237,0.92),rgba(255,255,255,0.84))','งานที่เปิดอยู่',String(openCnt),'รอรับงาน '+c('pending')+' · กำลังซ่อม '+(c('inprogress')+c('outsourced')),'var(--accent-strong)')
+  +   statCard('linear-gradient(135deg,rgba(218,236,229,0.92),rgba(255,255,255,0.84))','รอรับงาน',String(c('pending')),'งานที่ยังไม่มีช่างรับ','var(--warning)')
+  +   statCard('linear-gradient(135deg,rgba(250,244,231,0.92),rgba(255,255,255,0.84))','ปิดงานแล้ว',String(c('resolved')),'งานซ่อมที่เสร็จสิ้น','var(--accent-strong)')
+  +   statCard('linear-gradient(135deg,rgba(247,236,231,0.92),rgba(255,255,255,0.84))','ยืม–คืนค้างอยู่',String(loanActive),(loanOverdue?('เกินกำหนดคืน '+loanOverdue+' รายการ'):'ไม่มีเกินกำหนด'),(loanOverdue?'var(--danger)':'var(--text-muted)'))
   + '</div>'
   + '<div class="glass" style="padding:26px 28px">'
   +   '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap">'
   +     '<div><div class="eyebrow">TREND · 6 เดือน</div><h2 style="margin:6px 0 0;font-size:var(--text-h3);font-weight:var(--fw-bold)">แนวโน้มงานซ่อม</h2></div>'
-  +     '<div style="display:flex;gap:18px;font-size:.84rem;color:var(--text-muted)"><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">182</strong> งานรวม</span><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">30.3</strong> เฉลี่ย/เดือน</span></div>'
+  +     '<div style="display:flex;gap:18px;font-size:.84rem;color:var(--text-muted)"><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">'+allT.length+'</strong> งานทั้งหมด</span><span><strong style="color:var(--text-body);font-size:1.4rem;font-weight:var(--fw-black)">'+c('resolved')+'</strong> ปิดงานแล้ว</span></div>'
   +   '</div>'
   +   '<div style="margin-top:8px">'+lineChart(260)+'</div>'
   + '</div>'

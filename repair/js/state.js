@@ -7,6 +7,7 @@ var S = {
   demoRole: 'admin',
   lineUserId: '', booting: true, needRegister: false, noAccess: false,
   scanAsset: '', scanAssetInfo: null, scanLoading: false, scanPhotos: [],
+  assets: [], reportDevice: '', detailHistory: null, filterTech: 'all', filterCategory: 'all',
   alerts: [], alertDismissed: false, navOpen: false,
   resolveForm: { solution: '', parts: '', hours: '', vendorNote: '' },
   category: '',

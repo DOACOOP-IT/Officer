@@ -35,7 +35,7 @@ function handleScanResult(res){
   if (res.activeTicket){
     // มีงานที่ยังไม่ปิด → ไปหน้าสถานะของงานนั้น
     S.scanAssetInfo = res.asset;
-    setState({ screen:'detail', activeTicketId:res.activeTicket.id });
+    openTicket(res.activeTicket.id);
     return;
   }
   setState({ scanAssetInfo:res.asset, category:'', desc:'', scanPhotos:[], screen:'scan' });

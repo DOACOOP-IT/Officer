@@ -22,16 +22,13 @@ function viewReport(){
       + '<span style="display:block;font-size:.8rem;color:var(--text-muted);margin-top:7px;line-height:1.4">'+esc(m.desc)+'</span></span></button>';
   }).join('');
 
-  var qrBanner = S.qrShow
-    ? '<div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--radius-md);background:var(--grad-tint-pine);border:1px dashed rgba(37,102,91,0.34)">'
-      + '<div style="width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:#fff;border:1px solid rgba(37,102,91,0.2);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;padding:7px"><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span><span></span><span style="background:var(--accent);border-radius:1px"></span></div>'
-      + '<div style="flex:1;min-width:0"><div class="eyebrow" style="color:var(--accent-strong)">สแกน QR สำเร็จ</div><div style="font-weight:var(--fw-bold);font-size:.98rem">NB-00742 · Notebook Dell Latitude 5440</div><div style="font-size:.82rem;color:var(--text-muted)">กรอกข้อมูลอุปกรณ์ให้อัตโนมัติแล้ว</div></div>'
-      + '<button class="btn-ghost" style="padding:8px 16px;font-size:.84rem;box-shadow:none" onclick="clearQr()">ล้าง</button></div>'
-    : '';
+  var devOpts = '<option value="">— เลือกอุปกรณ์ —</option>' + (S.deviceRegistry||[]).map(function(d){
+    return '<option value="'+esc(d.id)+'"'+(S.reportDevice===d.id?' selected':'')+'>'+esc(d.id)+' · '+esc(d.name)+'</option>'; }).join('');
 
   return '<section style="animation:riseIn .6s var(--ease) both"><div style="max-width:720px;margin:0 auto">'
   + '<div class="glass" style="padding:30px 32px;display:flex;flex-direction:column;gap:22px">'
-  +   qrBanner
+  +   '<div style="display:grid;gap:8px"><label class="label">อุปกรณ์ที่แจ้งซ่อม</label>'
+  +     '<select class="field" onchange="S.reportDevice=this.value">'+devOpts+'</select></div>'
   +   '<div style="display:grid;gap:10px"><label class="label">ประเภทงานที่ต้องการแจ้ง</label>'
   +     '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">'+cards+'</div></div>'
   +   '<div style="display:grid;gap:8px"><label class="label">รายละเอียดปัญหา</label>'
@@ -55,8 +52,9 @@ function addPhoto(){ setState({ attach: Math.min(S.attach + 1, 4) }); }
 function clearQr(){ setState({ qrShow:false }); }
 function submitReport(){
   if (!(S.desc.trim() && S.category)) return;
-  var assetId = S.scanAssetInfo ? S.scanAssetInfo.id : (S.qrShow ? 'NB-00742' : '');
-  var place   = S.scanAssetInfo ? S.scanAssetInfo.location : '';
+  var assetId = S.reportDevice || '';
+  var a = (S.assets || []).filter(function(x){ return String(x.asset_id) === assetId; })[0];
+  var place = a ? (a.location || '') : '';
   var payload = { category:S.category, desc:S.desc.trim(), asset_id:assetId, place:place,
                   requester_id:S.lineUserId, requester_name:S.displayName,
                   photos:(S.scanPhotos || []).map(function(p){ return { name:p.name, dataUrl:p.dataUrl }; }) };
@@ -64,7 +62,7 @@ function submitReport(){
     google.script.run
       .withSuccessHandler(function(res){
         toastMsg('เปิดงานซ่อมแล้ว • หมายเลขงาน ' + (res && res.id ? res.id : '') + ' บันทึกลง Google Sheet แล้ว');
-        setState({ category:'', desc:'', scanPhotos:[] });
+        setState({ category:'', desc:'', scanPhotos:[], reportDevice:'' });
         refreshTickets();
       })
       .withFailureHandler(function(){ toastMsg('บันทึกงานซ่อมไม่สำเร็จ กรุณาลองใหม่'); })

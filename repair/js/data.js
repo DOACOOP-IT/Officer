@@ -32,7 +32,7 @@ function decorateTicket(t){
   var tn = tone(STATUS_TONE[t.statusKey] || 'success');
   return { id:t.id, dev:t.dev, by:t.by, tech:t.tech, status:t.status,
            statusKey:t.statusKey, place:t.place, at:t.at || '21 มิ.ย. 2569 · 09:12',
-           requester_id:t.requester_id || '', phone:t.phone || '',
+           category:t.category || '', requester_id:t.requester_id || '', phone:t.phone || '',
            desc:t.desc || '', solution:t.solution || '', parts:t.parts || '', work_hours:t.work_hours || '', resolved_at:t.resolved_at || '', photos:t.photos || [],
            bg:tn.bg, fg:tn.fg, bd:tn.bd };
 }

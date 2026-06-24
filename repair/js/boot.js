@@ -7,6 +7,7 @@ function loadBootData(cb){
     .withSuccessHandler(function(data){
       S.ticketsRaw = (data && data.tickets) || null;
       S.loanRaw    = (data && data.loans) || null;
+      S.assets     = (data && data.assets) || S.assets || [];
       if (data && data.devices && data.devices.length)
         S.deviceRegistry = data.devices.map(function(d){ return { id:String(d.id), name:String(d.name) }; });
       S.loading = false; if (cb) cb(); render();

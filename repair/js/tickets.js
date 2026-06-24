@@ -2,8 +2,27 @@
    TICKET LIST
    ============================================================ */
 function filteredTickets(){
+  return allTickets().filter(function(t){
+    if (S.ticketFilter !== 'all'   && t.statusKey !== S.ticketFilter) return false;
+    if (S.filterTech !== 'all'     && t.tech      !== S.filterTech)   return false;
+    if (S.filterCategory !== 'all' && t.category  !== S.filterCategory) return false;
+    return true;
+  });
+}
+var CAT_LABEL = { system:'ระบบ', device:'อุปกรณ์', network:'เครือข่าย', other:'อื่นๆ' };
+function ticketFilterBar(){
   var all = allTickets();
-  return S.ticketFilter === 'all' ? all : all.filter(function(t){ return t.statusKey === S.ticketFilter; });
+  var techs = [];
+  all.forEach(function(t){ if (t.tech && t.tech !== '—' && techs.indexOf(t.tech) < 0) techs.push(t.tech); });
+  var cats = [];
+  all.forEach(function(t){ if (t.category && cats.indexOf(t.category) < 0) cats.push(t.category); });
+  var techOpts = '<option value="all">ช่างทั้งหมด</option>' + techs.map(function(x){ return '<option value="'+esc(x)+'"'+(S.filterTech===x?' selected':'')+'>'+esc(x)+'</option>'; }).join('');
+  var catOpts  = '<option value="all">ทุกประเภท</option>' + cats.map(function(x){ return '<option value="'+esc(x)+'"'+(S.filterCategory===x?' selected':'')+'>'+esc(CAT_LABEL[x]||x)+'</option>'; }).join('');
+  return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">'
+    + '<select class="field" style="width:auto;padding:9px 14px;font-size:.88rem" onchange="setState({filterTech:this.value})">'+techOpts+'</select>'
+    + '<select class="field" style="width:auto;padding:9px 14px;font-size:.88rem" onchange="setState({filterCategory:this.value})">'+catOpts+'</select>'
+    + ((S.filterTech!=='all'||S.filterCategory!=='all') ? '<button class="btn-ghost" style="padding:9px 16px;font-size:.85rem" onclick="setState({filterTech:\'all\',filterCategory:\'all\'})">ล้างตัวกรอง</button>' : '')
+    + '</div>';
 }
 
 function viewTickets(){
@@ -35,6 +54,7 @@ function viewTickets(){
   +     '<button class="btn-primary" style="padding:10px 20px;font-size:.9rem" onclick="exportPdf()">พิมพ์ PDF</button>'
   +     '<button class="btn-ghost" style="padding:10px 20px;font-size:.9rem" onclick="exportCsv()">ส่งออก CSV</button>'
   +   '</div></div>'
+  + ticketFilterBar()
   + '<div class="glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
   +   '<div style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span style="text-align:right">สถานะ</span></div>'
   +   rows
@@ -42,7 +62,16 @@ function viewTickets(){
 }
 
 function setFilter(k){ setState({ ticketFilter:k }); }
-function openTicket(id){ setState({ screen:'detail', activeTicketId:id }); window.scrollTo(0,0); }
+function openTicket(id){
+  S.detailHistory = null;
+  setState({ screen:'detail', activeTicketId:id }); window.scrollTo(0,0);
+  if (hasBackend()){
+    google.script.run
+      .withSuccessHandler(function(res){ S.detailHistory = (res && res.history) || []; render(); })
+      .withFailureHandler(function(){ S.detailHistory = []; render(); })
+      .getTicketHistory(id);
+  } else { S.detailHistory = []; }
+}
 
 function exportCsv(){
   var rows = filteredTickets();
@@ -92,21 +121,30 @@ function viewDetail(){
   var all = allTickets();
   var t = all.filter(function(x){ return x.id === S.activeTicketId; })[0] || all[0];
 
-  var commentsHtml = S.comments.map(function(c){
-    var av = c.tone === 'me' ? 'ก' : (c.tone === 'sys' ? 'S' : 'ช');
-    var avBg = c.tone === 'me' ? 'var(--accent)' : 'rgba(37,102,91,0.12)';
-    var avFg = c.tone === 'me' ? '#fff' : 'var(--accent-strong)';
-    return '<div style="display:flex;gap:12px;align-items:flex-start">'
-      + '<span style="width:36px;height:36px;flex:0 0 auto;border-radius:999px;background:'+avBg+';color:'+avFg+';display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);font-size:.86rem">'+av+'</span>'
-      + '<div style="flex:1;background:var(--surface-strong);border:1px solid var(--line);border-radius:var(--radius-md);padding:12px 15px">'
-      + '<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:3px"><span style="font-weight:var(--fw-semibold);font-size:.88rem">'+esc(c.who)+'</span><span style="font-size:.78rem;color:var(--text-muted)">'+esc(c.when)+'</span></div>'
-      + '<div style="font-size:.9rem;line-height:var(--leading-normal)">'+esc(c.text)+'</div></div></div>';
-  }).join('');
+  /* ไทม์ไลน์จากประวัติจริง (repair_history) */
+  var HIST_LABEL = { '':'เปิดใบแจ้งซ่อม', pending:'รอรับงาน', inprogress:'รับงาน/กำลังซ่อม', outsourced:'ส่งต่อบริษัท', resolved:'ปิดงาน' };
+  var HIST_COLOR = { pending:'var(--warning)', inprogress:'var(--accent)', outsourced:'var(--warning)', resolved:'var(--accent)' };
+  var timelineHtml;
+  if (S.detailHistory == null){
+    timelineHtml = '<div style="color:var(--text-muted);font-size:.88rem">กำลังโหลดประวัติ…</div>';
+  } else if (!S.detailHistory.length){
+    timelineHtml = '<div style="color:var(--text-muted);font-size:.88rem">ยังไม่มีประวัติการดำเนินงาน</div>';
+  } else {
+    timelineHtml = S.detailHistory.map(function(h){
+      var title = HIST_LABEL[String(h.status_to)] || String(h.status_to);
+      var color = HIST_COLOR[String(h.status_to)] || 'var(--accent)';
+      var sub   = [h.note, h.changed_by ? ('โดย ' + h.changed_by) : ''].filter(String).join(' · ');
+      return '<div style="display:flex;gap:14px"><div style="position:relative;width:14px;flex:0 0 auto;display:flex;justify-content:center"><div style="width:2px;background:var(--line);flex:1"></div><span style="position:absolute;top:2px;width:14px;height:14px;border-radius:999px;background:'+color+';border:3px solid var(--surface-strong)"></span></div>'
+        + '<div style="padding-bottom:18px"><div style="font-size:.76rem;color:var(--text-muted)">'+esc(h.created_at)+'</div><div style="font-weight:var(--fw-semibold);font-size:.92rem;margin-top:1px">'+esc(title)+'</div>'
+        + (sub ? '<div style="font-size:.82rem;color:var(--text-muted);line-height:var(--leading-normal)">'+esc(sub)+'</div>' : '')+'</div></div>';
+    }).join('');
+  }
 
-  var timelineHtml = TIMELINE.map(function(ev){
-    return '<div style="display:flex;gap:14px"><div style="position:relative;width:14px;flex:0 0 auto;display:flex;justify-content:center"><div style="width:2px;background:var(--line);flex:1"></div><span style="position:absolute;top:2px;width:14px;height:14px;border-radius:999px;background:'+ev.color+';border:3px solid var(--surface-strong)"></span></div>'
-      + '<div style="padding-bottom:18px"><div style="font-size:.76rem;color:var(--text-muted)">'+esc(ev.when)+'</div><div style="font-weight:var(--fw-semibold);font-size:.92rem;margin-top:1px">'+esc(ev.title)+'</div><div style="font-size:.82rem;color:var(--text-muted);line-height:var(--leading-normal)">'+esc(ev.desc)+'</div></div></div>';
-  }).join('');
+  /* รูปที่แนบ (ลิงก์โฟลเดอร์ Drive) */
+  var photoUrl = (t.photos && t.photos.length) ? t.photos[0] : '';
+  var photoHtml = photoUrl
+    ? '<a href="'+esc(photoUrl)+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-md);background:var(--accent-soft);border:1px solid rgba(37,102,91,0.18);text-decoration:none;color:var(--accent-strong)"><span style="font-size:1.4rem">🖼️</span><span style="flex:1;font-weight:var(--fw-semibold)">เปิดดูรูปที่แนบ (Google Drive)</span><span style="font-size:1.1rem">↗</span></a>'
+    : '<div style="color:var(--text-muted);font-size:.88rem">ไม่มีรูปแนบ</div>';
 
   return '<section style="animation:riseIn .6s var(--ease) both">'
   + '<button class="btn-ghost" style="padding:9px 18px;font-size:.88rem;margin-bottom:18px" onclick="go(\'tickets\')">← กลับไปรายการงาน</button>'
@@ -124,19 +162,9 @@ function viewDetail(){
   +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">วันที่แจ้ง</div><div style="font-weight:var(--fw-semibold)">'+esc(t.at)+'</div></div>'
   +         '<div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:3px">ช่างผู้รับผิดชอบ</div><div style="font-weight:var(--fw-semibold)">'+esc(t.tech)+'</div></div>'
   +       '</div>'
-  +       '<div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px"><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:5px">อาการที่แจ้ง</div><p style="margin:0;line-height:var(--leading-normal)">เครื่องเปิดไม่ติด กดปุ่ม power แล้วไฟสถานะกะพริบแต่จอไม่แสดงภาพ มีเสียงบี๊บเป็นจังหวะ สันนิษฐานว่าเป็นที่หน่วยความจำหรือเมนบอร์ด</p></div>'
+  +       '<div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px"><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:5px">อาการที่แจ้ง</div><p style="margin:0;line-height:var(--leading-normal)">'+esc(t.desc || '—')+'</p></div>'
   +     '</div>'
-  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 14px;font-size:1.05rem;font-weight:var(--fw-bold)">รูปก่อน / หลังซ่อม</h3>'
-  +       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
-  +         '<div><div style="aspect-ratio:4/3;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--paper-200),var(--paper-50));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-500);font-size:.84rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.5),transparent 60%)"></span>ภาพถ่ายอาการเสีย</div><div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:8px;font-weight:var(--fw-semibold)">ก่อนซ่อม</div></div>'
-  +         '<div><div style="aspect-ratio:4/3;border-radius:var(--radius-md);background:var(--accent-soft);border:1px dashed rgba(37,102,91,0.3);display:flex;align-items:center;justify-content:center;color:var(--accent-strong);font-size:.84rem">รอช่างอัปโหลด</div><div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:8px;font-weight:var(--fw-semibold)">หลังซ่อม</div></div>'
-  +       '</div></div>'
-  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 16px;font-size:1.05rem;font-weight:var(--fw-bold)">ความคิดเห็น</h3>'
-  +       '<div style="display:flex;flex-direction:column;gap:16px">'+commentsHtml+'</div>'
-  +       '<div style="display:flex;gap:10px;margin-top:16px">'
-  +         '<input id="comment-input" value="'+esc(S.commentDraft)+'" oninput="S.commentDraft=this.value" onkeydown="if(event.key===\'Enter\')addComment()" placeholder="เพิ่มความคิดเห็น…" style="flex:1;border:1px solid var(--border);border-radius:999px;padding:12px 18px;font-size:.92rem;background:rgba(255,255,255,0.82);outline:none;color:var(--text-body)">'
-  +         '<button class="btn-primary" style="padding:12px 24px" onclick="addComment()">ส่ง</button>'
-  +       '</div></div>'
+  +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 14px;font-size:1.05rem;font-weight:var(--fw-bold)">รูปที่แนบ</h3>'+photoHtml+'</div>'
   +   '</div>'
   +   '<div style="display:flex;flex-direction:column;gap:22px;position:sticky;top:24px">'
   +     viewDetailActions(t)

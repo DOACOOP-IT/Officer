@@ -19,35 +19,42 @@ function go(key){ setState({ screen:key, navOpen:false }); window.scrollTo(0,0);
 function toggleNav(){ setState({ navOpen: !S.navOpen }); }
 function goHome(){ location.href = 'https://doacoop-it.github.io/Officer'; }
 
-/* ===== Bottom tab bar (มือถือ) ===== */
-var BN_ICONS = {
-  home:    '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/>',
+/* ===== App launcher tiles (มือถือ) ===== */
+var TILE_ICONS = {
   report:  '<path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L5 16l3 3 4.3-4.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-1.8-1.8z"/>',
-  tickets: '<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.1"/><circle cx="4" cy="12" r="1.1"/><circle cx="4" cy="18" r="1.1"/>',
   mine:    '<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4.2V3.5h6v.7M9 10h6M9 14h4"/>',
-  more:    '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>'
+  tickets: '<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.1"/><circle cx="4" cy="12" r="1.1"/><circle cx="4" cy="18" r="1.1"/>',
+  inbox:   '<path d="M3 13h4l2 3h6l2-3h4"/><path d="M5 13V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7"/>',
+  loans:   '<path d="M7 7h10v10H7z"/><path d="M3 10V5a2 2 0 0 1 2-2h5"/>',
+  qr:      '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><path d="M14 14h2v2M19 14v.01M14 19h5"/>',
+  pm:      '<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M9 3v4M15 3v4"/>'
 };
-function bottomTab(key, label, icon, onClick, active){
-  var on = active != null ? active
-    : (S.screen === key || (key === 'tickets' && S.screen === 'detail') || (key === 'report' && S.screen === 'scan'));
-  var click = onClick || ("go('" + key + "')");
-  return '<button class="'+(on?'on':'')+'" onclick="'+click+'">'
-    + '<span class="bn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg></span>'
-    + esc(label) + '</button>';
+function mtile(opt){
+  var grad  = opt.grad || 'rgba(255,255,255,0.8)';
+  var hero  = opt.hero ? ' hero' : '';
+  var badge = (opt.badge ? '<span class="mtile-badge">'+opt.badge+'</span>' : '');
+  var ic    = '<span class="mtile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+opt.icon+'</svg></span>';
+  var txt   = '<span class="mtile-l">'+esc(opt.label)+'</span>' + (opt.sub ? '<span class="mtile-s">'+esc(opt.sub)+'</span>' : '');
+  var inner = opt.hero ? ic + '<span class="mtile-txt">'+txt+'</span>' : ic + txt;
+  return '<button class="mtile'+hero+'" style="background:'+grad+'" onclick="'+opt.onclick+'">'+badge+inner+'</button>';
 }
-function bottomNav(){
-  var tabs;
+function mLauncher(){
+  var all = (typeof allTickets === 'function') ? allTickets() : [];
+  var cnt = function(k){ return all.filter(function(t){ return t.statusKey === k; }).length; };
+  var tiles = [];
   if (S.role === 'staff'){
-    tabs = bottomTab('dashboard','หน้าแรก',BN_ICONS.home)
-         + bottomTab('report','แจ้งซ่อม',BN_ICONS.report)
-         + bottomTab('mytickets','งานของฉัน',BN_ICONS.mine);
+    tiles.push(mtile({ label:'แจ้งซ่อม', sub:'เปิดงานซ่อมใหม่', icon:TILE_ICONS.report, grad:'var(--grad-tint-pine)', hero:true, onclick:"go('report')" }));
+    tiles.push(mtile({ label:'งานซ่อมของฉัน', icon:TILE_ICONS.mine, grad:'linear-gradient(135deg,rgba(229,240,237,0.9),rgba(255,255,255,0.85))', onclick:"go('mytickets')" }));
+    tiles.push(mtile({ label:'ยืม–คืนอุปกรณ์', icon:TILE_ICONS.loans, grad:'linear-gradient(135deg,rgba(250,244,231,0.9),rgba(255,255,255,0.85))', onclick:"go('loans')" }));
   } else {
-    tabs = bottomTab('dashboard','แดชบอร์ด',BN_ICONS.home)
-         + bottomTab('tickets','งานซ่อม',BN_ICONS.tickets)
-         + bottomTab('report','แจ้งซ่อม',BN_ICONS.report);
+    tiles.push(mtile({ label:'งานรอรับ', sub:'กดรับงานซ่อมที่เข้ามาใหม่', icon:TILE_ICONS.inbox, grad:'var(--grad-tint-pine)', hero:true, badge:(cnt('pending')||''), onclick:"go('tickets')" }));
+    tiles.push(mtile({ label:'งานซ่อมทั้งหมด', icon:TILE_ICONS.tickets, grad:'linear-gradient(135deg,rgba(229,240,237,0.9),rgba(255,255,255,0.85))', onclick:"go('tickets')" }));
+    tiles.push(mtile({ label:'แจ้งซ่อม', icon:TILE_ICONS.report, grad:'linear-gradient(135deg,rgba(218,236,229,0.9),rgba(255,255,255,0.85))', onclick:"go('report')" }));
+    tiles.push(mtile({ label:'QR อุปกรณ์', icon:TILE_ICONS.qr, grad:'linear-gradient(135deg,rgba(247,236,231,0.9),rgba(255,255,255,0.85))', onclick:"go('qr')" }));
+    tiles.push(mtile({ label:'แผนบำรุงรักษา', icon:TILE_ICONS.pm, grad:'linear-gradient(135deg,rgba(250,244,231,0.9),rgba(255,255,255,0.85))', onclick:"go('pm')" }));
+    tiles.push(mtile({ label:'ยืม–คืน', icon:TILE_ICONS.loans, grad:'linear-gradient(135deg,rgba(245,239,231,0.9),rgba(255,255,255,0.85))', onclick:"go('loans')" }));
   }
-  tabs += bottomTab(null,'เพิ่มเติม',BN_ICONS.more,'toggleNav()',!!S.navOpen);
-  return '<nav class="bottom-nav">'+tabs+'</nav>';
+  return '<div class="launcher">'+tiles.join('')+'</div>';
 }
 
 /* ===== Greeting header (มือถือ) ===== */
@@ -76,7 +83,9 @@ function viewApp(){
   }
   return ''
   + '<div class="mobile-topbar">'
-  +   '<div style="width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.78rem">IT</div>'
+  +   (S.screen === 'dashboard'
+        ? '<div style="width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.78rem">IT</div>'
+        : '<button onclick="go(\'dashboard\')" aria-label="กลับหน้าแรก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--ink-900)">‹</button>')
   +   '<div style="flex:1;min-width:0;font-weight:var(--fw-bold);font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(PAGE_TITLE[S.screen])+'</div>'
   +   '<button onclick="goHome()" aria-label="หน้าหลัก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⌂</button>'
   + '</div>'
@@ -111,7 +120,6 @@ function viewApp(){
   +     '</header>'
   +     body
   +   '</main>'
-  + '</div>'
-  + bottomNav();
+  + '</div>';
 }
 

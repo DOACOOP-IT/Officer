@@ -20,7 +20,9 @@ function viewDashboard(){
       + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
   }).join('');
 
-  return '<section style="animation:riseIn .6s var(--ease) both"><div style="display:flex;flex-direction:column;gap:22px">'
+  return '<section style="animation:riseIn .6s var(--ease) both">'
+  + mLauncher()
+  + '<div class="desktop-dash" style="display:flex;flex-direction:column;gap:22px">'
   + '<div class="statgrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">'
   +   statCard('linear-gradient(135deg,rgba(229,240,237,0.92),rgba(255,255,255,0.84))','งานที่เปิดอยู่','18','+3 จากสัปดาห์ก่อน','var(--accent-strong)')
   +   statCard('linear-gradient(135deg,rgba(218,236,229,0.92),rgba(255,255,255,0.84))','SLA Achievement','92%','เป้าหมาย 90% · ทำได้ตามเป้า','var(--text-muted)')

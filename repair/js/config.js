@@ -6,6 +6,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw1muK2LLk21bL14PCbJF1q3l
 function _apiPayload(action, args){
   switch (action){
     case 'loginByLine':      return { lineUserId: args[0] };
+    case 'loginByPassword':  return { username: args[0], password: args[1] };
     case 'getAssetEntry':    return { assetId: args[0] };
     case 'deleteDevice':     return { id: args[0] };
     case 'getMyTickets':     return { lineUserId: args[0] };
@@ -25,7 +26,7 @@ function _apiCall(action, args, onOk, onErr){
   .catch(function(err){ if (onErr) onErr(err); });
 }
 /* Shim: ให้โค้ดเดิม google.script.run.<action>() วิ่งผ่าน fetch */
-var _API_ACTIONS = ['getBootData','loginByLine','getAssetEntry','createTicket','assignTicket',
+var _API_ACTIONS = ['getBootData','loginByLine','loginByPassword','getAssetEntry','createTicket','assignTicket',
   'outsourceTicket','resolveTicket','getMyTickets','getAlerts','saveDevice','deleteDevice',
   'submitLoan','getTicketHistory','ping'];
 function _makeRunner(){

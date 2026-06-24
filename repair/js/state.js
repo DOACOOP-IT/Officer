@@ -3,7 +3,7 @@
    ============================================================ */
 var S = {
   screen: 'dashboard',
-  loggedIn: false, username: '', password: '', loginError: '', loginLoading: false, displayName: '', role: '', department: '',
+  loggedIn: false, loginUser: '', loginPass: '', loginError: '', loginLoading: false, displayName: '', role: '', department: '',
   demoRole: 'admin',
   lineUserId: '', booting: true, needRegister: false, noAccess: false,
   scanAsset: '', scanAssetInfo: null, scanLoading: false, scanPhotos: [],

@@ -48,53 +48,67 @@ function viewNoAccess(){
     + '<p style="margin:0;color:var(--text-muted);font-size:.92rem">บัญชีของคุณไม่มีสิทธิ์เข้าใช้ระบบแจ้งซ่อม</p></div>');
 }
 
-/* โหมดสาธิต: เลือก role เพื่อทดสอบ (เมื่อไม่มี LIFF_ID) */
+/* หน้า login (เปิดจากคอม/นอกแอป LINE): user/pass + ปุ่ม LINE */
 function viewLogin(){
-  if (S.booting && liffEnabled()) return viewBooting();
+  if (S.booting)      return viewBooting();
   if (S.needRegister) return viewNeedRegister();
   if (S.noAccess)     return viewNoAccess();
 
-  var pick = function(k, label, sub){
-    var on = S.demoRole === k;
-    return '<button onclick="S.demoRole=\''+k+'\';render()" style="text-align:left;border:1.5px solid '+(on?'var(--accent)':'var(--border)')+';background:'+(on?'var(--grad-tint-pine)':'rgba(255,255,255,0.7)')+';border-radius:var(--radius-md);padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:12px">'
-      + '<span style="width:18px;height:18px;border-radius:999px;border:2px solid '+(on?'var(--accent)':'var(--line-strong)')+';background:'+(on?'var(--accent)':'transparent')+';flex:0 0 auto"></span>'
-      + '<span><span style="display:block;font-weight:var(--fw-bold);font-size:.96rem;color:'+(on?'var(--accent-strong)':'var(--ink-900)')+'">'+esc(label)+'</span><span style="display:block;font-size:.8rem;color:var(--text-muted)">'+esc(sub)+'</span></span></button>';
-  };
+  var err = S.loginError
+    ? '<div style="background:var(--danger-soft);border:1px solid rgba(176,93,70,0.2);color:var(--danger);border-radius:var(--radius-md);padding:11px 14px;font-size:.86rem;font-weight:var(--fw-semibold)">'+esc(S.loginError)+'</div>'
+    : '';
+  var loading = S.loginLoading;
 
   return authShell('<div class="glass" style="padding:32px">'
-    + '<div class="eyebrow">DEMO MODE · เลือกบทบาทเพื่อทดสอบ</div>'
-    + '<h2 style="margin:6px 0 18px;font-size:1.35rem;font-weight:var(--fw-bold)">เข้าสู่ระบบ (สาธิต)</h2>'
-    + '<div style="display:flex;flex-direction:column;gap:10px">'
-    + pick('admin','หัวหน้าฝ่ายสารสนเทศ','admin · เห็นทุกงาน + ตรวจสอบย้อนหลัง')
-    + pick('tech','เจ้าหน้าที่สารสนเทศ','tech · รับงาน/ซ่อม/ส่งบริษัท/ปิดงาน')
-    + pick('staff','พนักงานทั่วไป (ผู้แจ้ง)','staff · แจ้งซ่อม + ติดตามงานของตัวเอง')
+    + '<div class="eyebrow">SECURE ACCESS</div>'
+    + '<h2 style="margin:6px 0 20px;font-size:1.35rem;font-weight:var(--fw-bold)">เข้าสู่ระบบ</h2>'
+    + '<div style="display:flex;flex-direction:column;gap:14px">'
+    +   '<div style="display:grid;gap:7px"><label class="label">ชื่อผู้ใช้</label>'
+    +     '<input class="field" id="login-user" value="'+esc(S.loginUser||'')+'" oninput="S.loginUser=this.value" placeholder="ชื่อผู้ใช้"></div>'
+    +   '<div style="display:grid;gap:7px"><label class="label">รหัสผ่าน</label>'
+    +     '<input class="field" id="login-pass" type="password" value="'+esc(S.loginPass||'')+'" oninput="S.loginPass=this.value" onkeydown="if(event.key===\'Enter\')doPasswordLogin()" placeholder="รหัสผ่าน"></div>'
+    +   err
+    +   '<button class="btn-primary" style="margin-top:4px;width:100%;font-size:1.02rem;padding:15px"'+(loading?' disabled':'')+' onclick="doPasswordLogin()">'+(loading?'กำลังเข้าสู่ระบบ…':'เข้าสู่ระบบ')+'</button>'
     + '</div>'
-    + '<button class="btn-primary" style="margin-top:18px;width:100%;font-size:1.02rem;padding:15px" onclick="doDemoLogin()">เข้าสู่ระบบ</button>'
-    + '<p style="margin:14px 0 0;font-size:.78rem;color:var(--text-muted);text-align:center">โหมดจริงจะระบุตัวตนผ่าน LINE อัตโนมัติ (ตั้งค่า LIFF_ID)</p>'
+    + '<div style="display:flex;align-items:center;gap:12px;margin:18px 0"><div style="flex:1;height:1px;background:var(--line)"></div><span style="font-size:.8rem;color:var(--text-muted)">หรือ</span><div style="flex:1;height:1px;background:var(--line)"></div></div>'
+    + '<button onclick="doLineLogin()" style="width:100%;border:0;border-radius:12px;background:#06C755;color:#fff;font-weight:var(--fw-bold);font-size:1rem;padding:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'
+    +   '<span style="width:24px;height:24px;border-radius:6px;background:#fff;color:#06C755;display:flex;align-items:center;justify-content:center;font-weight:var(--fw-black);font-size:.7rem">LINE</span>เข้าสู่ระบบด้วย LINE</button>'
     + '</div>');
 }
 
-function doDemoLogin(){
-  var u = DEMO_USERS[S.demoRole] || DEMO_USERS.admin;
-  setState({ loggedIn:true, displayName:u.name, role:u.role, department:u.department,
-             lineUserId:u.userId, screen:'dashboard', alertDismissed:false });
-  if (ASSET_PARAM) routeScan(ASSET_PARAM);
-  loadDemoAlerts();
+function applyProfile(res){
+  S.loggedIn = true; S.displayName = res.name || ''; S.role = res.role || 'staff';
+  S.department = res.department || ''; S.lineUserId = res.userID || '';
+  if (res.pictureUrl) LINE.profile = { pictureUrl: res.pictureUrl, displayName: res.name };
+  S.loginLoading = false; S.loginError = ''; S.loginPass = '';
+  loadBootData(function(){
+    if (S.scanAsset) routeScan(S.scanAsset);
+    else { S.screen = 'dashboard'; render(); }
+    fetchAlerts();
+  });
 }
 
-function loadDemoAlerts(){
-  if (S.role === 'staff')
-    S.alerts = [{ type:'update', count:1, msg:'งานซ่อมของคุณ 1 รายการ มีการอัปเดตสถานะ' }];
-  else
-    S.alerts = [
-      { type:'pending',    count:3, msg:'มีงานแจ้งซ่อมรอรับงาน 3 รายการ' },
-      { type:'outsourced', count:1, msg:'งานที่ส่งบริษัท 1 รายการ รอปิดงาน' },
-    ];
-  renderToast();
+function doPasswordLogin(){
+  var u = (S.loginUser || '').trim(), p = (S.loginPass || '');
+  if (!u || !p){ setState({ loginError:'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน' }); return; }
+  if (S.loginLoading) return;
+  setState({ loginError:'', loginLoading:true });
+  google.script.run
+    .withSuccessHandler(function(res){
+      if (res && res.ok) applyProfile(res);
+      else setState({ loginLoading:false, noAccess:!!(res && res.noAccess), loginError:(res && res.error) || 'เข้าสู่ระบบไม่สำเร็จ' });
+    })
+    .withFailureHandler(function(){ setState({ loginLoading:false, loginError:'เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่' }); })
+    .loginByPassword(u, p);
+}
+
+function doLineLogin(){
+  if (liffEnabled()){ try { liff.login(); return; } catch(e){} }
+  toastMsg('เข้าสู่ระบบด้วย LINE ไม่พร้อมใช้งานขณะนี้');
 }
 
 function logout(){
   if (liffEnabled() && liff.isLoggedIn()) { try { liff.logout(); } catch(e){} }
-  setState({ loggedIn:false, displayName:'', role:'', department:'', lineUserId:'', alerts:[], alertDismissed:false, needRegister:false, noAccess:false });
+  setState({ loggedIn:false, displayName:'', role:'', department:'', lineUserId:'', loginUser:'', loginPass:'', loginError:'', alerts:[], alertDismissed:false, needRegister:false, noAccess:false });
 }
 

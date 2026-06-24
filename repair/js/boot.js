@@ -23,7 +23,13 @@ function boot(){
     liff.init({ liffId: LIFF_ID }).then(function(){
       /* LIFF คืนค่า ?asset= จาก liff.state หลัง init เสร็จ — อ่านใหม่ตรงนี้ */
       S.scanAsset = parseAssetParam() || S.scanAsset;
-      if (!liff.isLoggedIn()){ liff.login(); return; }
+      /* ยังไม่ได้ login LINE:
+         - อยู่ในแอป LINE (in-client) → login อัตโนมัติ
+         - เปิดจากคอม/เบราว์เซอร์ทั่วไป → แสดงหน้า login (user/pass + ปุ่ม LINE) */
+      if (!liff.isLoggedIn()){
+        if (liff.isInClient()) { liff.login(); return; }
+        S.booting = false; render(); return;
+      }
       return liff.getProfile().then(function(p){
         LINE.userId = p.userId; LINE.profile = p;
         google.script.run

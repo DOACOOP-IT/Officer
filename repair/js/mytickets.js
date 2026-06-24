@@ -19,10 +19,7 @@ function viewMyTickets(){
       +   '<span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span>'
       + '</div>'
       + '<div style="font-weight:var(--fw-semibold);line-height:1.35">'+esc(t.dev)+'</div>'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.82rem">'
-      +   '<span style="color:var(--text-muted)">'+esc(t.at)+'</span>'
-      +   '<span style="color:'+t.slaColor+';font-weight:var(--fw-semibold)">'+esc(t.sla)+'</span>'
-      + '</div></div>';
+      + '<div style="font-size:.82rem;color:var(--text-muted)">'+esc(t.at)+'</div></div>';
   }).join('');
   return '<section style="animation:riseIn .6s var(--ease) both"><div style="display:flex;flex-direction:column;gap:12px;max-width:680px;margin:0 auto">'
     + cards + '</div></section>';

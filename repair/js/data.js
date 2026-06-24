@@ -25,17 +25,14 @@ var MOCK_TICKETS = [
   { id:'JOB-2569-0134', dev:'AP-00021 · Access Point Ubiquiti U6',      by:'วิชัย สมาชิก',    tech:'—',                 sla:'เหลือ 12:00 ชม.',   slaTone:'muted',   status:'รอรับงาน',      statusKey:'pending',    place:'อาคาร 1 ชั้น 5',                  at:'24 มิ.ย. 2569 · 09:12', desc:'Wi-Fi ช้ามาก ใช้งานไม่ได้ในบริเวณชั้น 5',                     solution:'', parts:'', work_hours:'', resolved_at:'' },
 ];
 
-function slaColorFor(t){ return t === 'danger' ? D : (t === 'warning' ? W : M); }
-
-/* Decorate a raw ticket row with presentation values (colors, badge tones). */
+/* Decorate a raw ticket row with presentation values (badge tones by status). */
+var STATUS_TONE = { pending:'warning', inprogress:'success', outsourced:'warning', resolved:'success' };
 function decorateTicket(t){
-  var sc = slaColorFor(t.slaTone);
-  var tk = (t.statusKey === 'pending' || t.statusKey === 'outsourced') ? 'warning' : (t.slaTone === 'danger' ? 'danger' : 'success');
-  var tn = tone(tk);
-  return { id:t.id, dev:t.dev, by:t.by, tech:t.tech, sla:t.sla, slaColor:sc, status:t.status,
+  var tn = tone(STATUS_TONE[t.statusKey] || 'success');
+  return { id:t.id, dev:t.dev, by:t.by, tech:t.tech, status:t.status,
            statusKey:t.statusKey, place:t.place, at:t.at || '21 มิ.ย. 2569 · 09:12',
            requester_id:t.requester_id || '', phone:t.phone || '',
-           desc:t.desc || '', solution:t.solution || '', parts:t.parts || '', work_hours:t.work_hours || '', resolved_at:t.resolved_at || '',
+           desc:t.desc || '', solution:t.solution || '', parts:t.parts || '', work_hours:t.work_hours || '', resolved_at:t.resolved_at || '', photos:t.photos || [],
            bg:tn.bg, fg:tn.fg, bd:tn.bd };
 }
 

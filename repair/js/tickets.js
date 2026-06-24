@@ -21,12 +21,11 @@ function viewTickets(){
   }).join('');
 
   var rows = filteredTickets().map(function(t){
-    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.7fr 1fr 1.15fr 1.1fr 0.95fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
+    return '<div onclick="openTicket(\''+t.id+'\')" style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;align-items:center;padding:15px 14px;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer;border-radius:12px;transition:var(--transition-base)" onmouseover="this.style.background=\'var(--accent-soft)\'" onmouseout="this.style.background=\'transparent\'">'
       + '<span style="font-weight:var(--fw-bold);color:var(--accent-strong)">'+esc(t.id)+'</span>'
       + '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.dev)+'</span>'
       + '<span style="color:var(--text-muted)">'+esc(t.by)+'</span>'
       + '<span style="color:var(--text-muted)">'+esc(t.tech)+'</span>'
-      + '<span style="color:'+t.slaColor+';font-weight:var(--fw-semibold);font-size:.85rem">'+esc(t.sla)+'</span>'
       + '<span style="justify-self:end;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;font-size:.8rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span></div>';
   }).join('');
 
@@ -37,7 +36,7 @@ function viewTickets(){
   +     '<button class="btn-ghost" style="padding:10px 20px;font-size:.9rem" onclick="exportCsv()">ส่งออก CSV</button>'
   +   '</div></div>'
   + '<div class="glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
-  +   '<div style="display:grid;grid-template-columns:1.2fr 1.7fr 1fr 1.15fr 1.1fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span>SLA</span><span style="text-align:right">สถานะ</span></div>'
+  +   '<div style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span style="text-align:right">สถานะ</span></div>'
   +   rows
   + '</div></div></div></section>';
 }
@@ -47,9 +46,9 @@ function openTicket(id){ setState({ screen:'detail', activeTicketId:id }); windo
 
 function exportCsv(){
   var rows = filteredTickets();
-  var head = ['หมายเลขงาน','อุปกรณ์','ผู้แจ้ง','ช่างผู้รับผิดชอบ','SLA','สถานะ'];
+  var head = ['หมายเลขงาน','อุปกรณ์','ผู้แจ้ง','ช่างผู้รับผิดชอบ','สถานะ'];
   var escc = function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; };
-  var csv = [head].concat(rows.map(function(t){ return [t.id,t.dev,t.by,t.tech,t.sla,t.status]; }))
+  var csv = [head].concat(rows.map(function(t){ return [t.id,t.dev,t.by,t.tech,t.status]; }))
     .map(function(r){ return r.map(escc).join(','); }).join('\r\n');
   var blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8' });
   var url = URL.createObjectURL(blob);
@@ -63,7 +62,7 @@ function exportPdf(){
   var rows = filteredTickets();
   var escp = function(v){ return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
   var trs = rows.map(function(t,i){
-    return '<tr><td>'+(i+1)+'</td><td>'+escp(t.id)+'</td><td class="l">'+escp(t.dev)+'</td><td>'+escp(t.by)+'</td><td>'+escp(t.tech)+'</td><td>'+escp(t.sla)+'</td><td>'+escp(t.status)+'</td></tr>';
+    return '<tr><td>'+(i+1)+'</td><td>'+escp(t.id)+'</td><td class="l">'+escp(t.dev)+'</td><td>'+escp(t.by)+'</td><td>'+escp(t.tech)+'</td><td>'+escp(t.status)+'</td></tr>';
   }).join('');
   var html = '<!doctype html><html lang="th"><head><meta charset="utf-8"><title>รายการงานซ่อม IT</title>'
     + '<style>@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap");'
@@ -77,7 +76,7 @@ function exportPdf(){
     + '<div class="head"><div class="brand"><div class="logo">IT</div><div><h1>รายการงานซ่อม IT</h1>'
     + '<div class="sub">สอ.กรมวิชาการเกษตร จำกัด · '+rows.length+' รายการ</div></div></div>'
     + '<div class="sub">พิมพ์เมื่อ 22 มิ.ย. 2569</div></div>'
-    + '<table><thead><tr><th>#</th><th>หมายเลขงาน</th><th class="l">อุปกรณ์</th><th>ผู้แจ้ง</th><th>ช่าง</th><th>SLA</th><th>สถานะ</th></tr></thead><tbody>'
+    + '<table><thead><tr><th>#</th><th>หมายเลขงาน</th><th class="l">อุปกรณ์</th><th>ผู้แจ้ง</th><th>ช่าง</th><th>สถานะ</th></tr></thead><tbody>'
     + trs + '</tbody></table><div class="foot">เอกสารนี้สร้างจากระบบแจ้งซ่อม IT โดยอัตโนมัติ</div></body></html>';
   var w = window.open('', '_blank');
   if (!w){ toastMsg('กรุณาอนุญาต pop-up เพื่อพิมพ์ PDF'); return; }
@@ -140,11 +139,6 @@ function viewDetail(){
   +       '</div></div>'
   +   '</div>'
   +   '<div style="display:flex;flex-direction:column;gap:22px;position:sticky;top:24px">'
-  +     '<div class="glass" style="padding:26px 28px;text-align:center"><div class="eyebrow">SLA COUNTDOWN</div>'
-  +       '<div style="font-size:3rem;font-weight:var(--fw-black);letter-spacing:var(--tracking-hero);margin:10px 0 4px;color:'+t.slaColor+'">02:14:30</div>'
-  +       '<div style="color:var(--text-muted);font-size:.88rem">เวลาคงเหลือก่อนครบกำหนด SLA</div>'
-  +       '<div style="height:10px;border-radius:999px;background:rgba(27,40,38,0.07);overflow:hidden;margin:18px 0 10px"><div style="height:100%;width:64%;background:var(--grad-accent);border-radius:999px"></div></div>'
-  +       '<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-muted)"><span>รับงาน 10:40</span><span>ครบกำหนด 16:40</span></div></div>'
   +     viewDetailActions(t)
   +     '<div class="glass" style="padding:24px 26px"><h3 style="margin:0 0 16px;font-size:1.05rem;font-weight:var(--fw-bold)">ไทม์ไลน์กิจกรรม</h3><div style="display:flex;flex-direction:column">'+timelineHtml+'</div></div>'
   +   '</div>'

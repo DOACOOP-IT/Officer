@@ -10,7 +10,7 @@ function loadBootData(cb){
       S.assets     = (data && data.assets) || S.assets || [];
       if (data && data.devices && data.devices.length)
         S.deviceRegistry = data.devices.map(function(d){ return { id:String(d.id), name:String(d.name) }; });
-      S.loading = false; if (cb) cb(); fetchTechs(); render();
+      S.loading = false; if (cb) cb(); fetchTechs(); startPolling(); render();
     })
     .withFailureHandler(function(){ S.loading = false; if (cb) cb(); render(); })
     .getBootData();
@@ -22,6 +22,54 @@ function fetchTechs(){
     .withSuccessHandler(function(r){ if (r && r.ok) S.techs = r.techs || []; })
     .withFailureHandler(function(){})
     .getTechs();
+}
+
+/* ===== Manual refresh + auto-refresh (polling) ===== */
+function doRefresh(){
+  if (!hasBackend()){ toastMsg('โหมดสาธิต'); return; }
+  toastMsg('กำลังอัปเดตข้อมูล…');
+  loadBootData(function(){ fetchAlerts(); });
+}
+
+var _pollTimer = null, _lastTicketSig = '';
+function ticketSig(){
+  var t = S.ticketsRaw || [];
+  return t.length + '|' + t.map(function(x){ return x.id + x.statusKey; }).join(',');
+}
+function startPolling(){
+  stopPolling();
+  _lastTicketSig = ticketSig();
+  _pollTimer = setInterval(pollRefresh, 25000);
+}
+function stopPolling(){ if (_pollTimer){ clearInterval(_pollTimer); _pollTimer = null; } }
+function maybeRender(){
+  var ae = document.activeElement;
+  if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return; // กำลังพิมพ์อยู่ → ไม่ render ทับ
+  render();
+}
+function pollRefresh(){
+  if (!hasBackend() || !S.loggedIn) return;
+  google.script.run
+    .withSuccessHandler(function(data){
+      if (!data) return;
+      var oldIds = (S.ticketsRaw || []).map(function(x){ return x.id; });
+      S.ticketsRaw = data.tickets || S.ticketsRaw;
+      S.loanRaw    = data.loans   || S.loanRaw;
+      S.assets     = data.assets  || S.assets;
+      if (data.devices && data.devices.length)
+        S.deviceRegistry = data.devices.map(function(d){ return { id:String(d.id), name:String(d.name) }; });
+      var newIds = (data.tickets || []).map(function(x){ return x.id; }).filter(function(id){ return oldIds.indexOf(id) < 0; });
+      var sig = ticketSig();
+      if (sig !== _lastTicketSig){
+        _lastTicketSig = sig;
+        if (newIds.length && (S.role === 'tech' || S.role === 'admin'))
+          toastMsg('🔔 มีงานแจ้งซ่อมใหม่ ' + newIds.length + ' รายการ');
+        fetchAlerts();
+        maybeRender();
+      }
+    })
+    .withFailureHandler(function(){})
+    .getBootData();
 }
 
 function boot(){

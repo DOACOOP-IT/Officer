@@ -87,6 +87,7 @@ function viewApp(){
         ? '<div style="width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.78rem">IT</div>'
         : '<button onclick="go(\'dashboard\')" aria-label="กลับหน้าแรก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--ink-900)">‹</button>')
   +   '<div style="flex:1;min-width:0;font-weight:var(--fw-bold);font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(PAGE_TITLE[S.screen])+'</div>'
+  +   '<button onclick="doRefresh()" aria-label="รีเฟรช" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⟳</button>'
   +   '<button onclick="goHome()" aria-label="หน้าหลัก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⌂</button>'
   + '</div>'
   + '<div class="nav-backdrop'+(S.navOpen?' show':'')+'" onclick="toggleNav()"></div>'
@@ -117,6 +118,7 @@ function viewApp(){
   +       '<div><div class="eyebrow" style="margin-bottom:7px">IT HELPDESK · 21 มิ.ย. 2569</div>'
   +       '<h1 style="margin:0;font-size:var(--text-title);font-weight:var(--fw-black);letter-spacing:var(--tracking-hero);line-height:var(--leading-tight)">'+esc(PAGE_TITLE[S.screen])+'</h1>'
   +       '<p style="margin:8px 0 0;color:var(--text-muted);font-size:1.02rem">'+esc(PAGE_SUB[S.screen])+'</p></div>'
+  +       '<button class="btn-ghost hide-mobile" onclick="doRefresh()" style="padding:10px 18px;font-size:.9rem;display:inline-flex;align-items:center;gap:8px"><span style="font-size:1.1rem;line-height:1">⟳</span>รีเฟรช</button>'
   +     '</header>'
   +     body
   +   '</main>'

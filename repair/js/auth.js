@@ -108,6 +108,7 @@ function doLineLogin(){
 }
 
 function logout(){
+  if (typeof stopPolling === 'function') stopPolling();
   if (liffEnabled() && liff.isLoggedIn()) { try { liff.logout(); } catch(e){} }
   setState({ loggedIn:false, displayName:'', role:'', department:'', lineUserId:'', loginUser:'', loginPass:'', loginError:'', alerts:[], alertDismissed:false, needRegister:false, noAccess:false });
 }

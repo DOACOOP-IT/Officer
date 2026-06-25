@@ -15,6 +15,7 @@ function navBtn(key, label){
   return '<button class="nav-btn" style="'+st+'" onclick="go(\''+key+'\')">'
     + '<span style="width:9px;height:9px;border-radius:999px;background:'+dot+';flex:0 0 auto"></span>'+esc(label)+'</button>';
 }
+function homeScreen(){ return (S.role === 'staff') ? 'mytickets' : 'dashboard'; }
 function go(key){ setState({ screen:key, navOpen:false }); window.scrollTo(0,0); }
 function toggleNav(){ setState({ navOpen: !S.navOpen }); }
 function goHome(){ location.href = 'https://doacoop-it.github.io/Officer'; }
@@ -80,9 +81,9 @@ function viewApp(){
   }
   return ''
   + '<div class="mobile-topbar">'
-  +   (S.screen === 'dashboard'
+  +   (S.screen === homeScreen()
         ? '<div style="width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.78rem">IT</div>'
-        : '<button onclick="go(\'dashboard\')" aria-label="กลับหน้าแรก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--ink-900)">‹</button>')
+        : '<button onclick="go(homeScreen())" aria-label="กลับหน้าแรก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--ink-900)">‹</button>')
   +   '<div style="flex:1;min-width:0;font-weight:var(--fw-bold);font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(PAGE_TITLE[S.screen])+'</div>'
   +   '<button onclick="doRefresh()" aria-label="รีเฟรช" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⟳</button>'
   +   '<button onclick="goHome()" aria-label="หน้าหลัก" style="border:1px solid var(--line);background:rgba(255,255,255,0.8);border-radius:12px;width:40px;height:40px;flex:0 0 auto;cursor:pointer;font-size:1.05rem;line-height:1;color:var(--ink-900)">⌂</button>'
@@ -100,16 +101,15 @@ function viewApp(){
   +     '</div>'
   +     '<nav style="display:flex;flex-direction:column;gap:4px">'
   +       '<div class="nav-head">เมนูหลัก</div>'
-  +       navBtn('dashboard','แดชบอร์ด') + navBtn('report','แจ้งซ่อม')
-  + (S.role === 'staff' ? navBtn('mytickets','งานซ่อมของฉัน') : navBtn('tickets','รายการงานซ่อม'))
-  + navBtn('loans','ยืม–คืนอุปกรณ์')
-  +       '<div class="nav-head" style="padding-top:16px">เครื่องมือ</div>'
-  +       navBtn('qr','QR Code อุปกรณ์')
+  + (S.role === 'staff'
+      ? navBtn('report','แจ้งซ่อม') + navBtn('mytickets','งานซ่อมของฉัน') + navBtn('loans','ยืม–คืนอุปกรณ์')
+      : navBtn('dashboard','แดชบอร์ด') + navBtn('report','แจ้งซ่อม') + navBtn('tickets','รายการงานซ่อม') + navBtn('loans','ยืม–คืนอุปกรณ์')
+        + '<div class="nav-head" style="padding-top:16px">เครื่องมือ</div>' + navBtn('qr','QR Code อุปกรณ์'))
   +     '</nav>'
   +     '<button onclick="goHome()" style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1px solid var(--line);background:rgba(255,255,255,0.7);border-radius:var(--radius-md);padding:12px 14px;font-size:.9rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--text-body)"><span style="font-size:1rem;line-height:1">⌂</span>กลับหน้าหลัก</button>'
   +   '</aside>'
   +   '<main class="content">'
-  +     (S.screen === 'dashboard' ? mobileGreeting() : '')
+  +     (S.screen === homeScreen() ? mobileGreeting() : '')
   +     viewAlertBanner()
   +     '<header class="page-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:26px">'
   +       '<div><div class="eyebrow" style="margin-bottom:7px">IT HELPDESK · 21 มิ.ย. 2569</div>'

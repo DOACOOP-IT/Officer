@@ -98,7 +98,7 @@ function boot(){
               S.lineUserId = res.userID || p.userId;
               loadBootData(function(){
                 if (S.scanAsset) routeScan(S.scanAsset);
-                else { S.screen = 'dashboard'; render(); }
+                else { S.screen = homeScreen(); render(); }
                 fetchAlerts();
               });
             } else if (res && res.noAccess){ S.noAccess = true; render(); }

@@ -83,7 +83,7 @@ function applyProfile(res){
   S.loginLoading = false; S.loginError = ''; S.loginPass = '';
   loadBootData(function(){
     if (S.scanAsset) routeScan(S.scanAsset);
-    else { S.screen = 'dashboard'; render(); }
+    else { S.screen = homeScreen(); render(); }
     fetchAlerts();
   });
 }

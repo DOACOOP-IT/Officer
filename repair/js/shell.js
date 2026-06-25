@@ -51,7 +51,6 @@ function mLauncher(){
     tiles.push(mtile({ label:'งานซ่อมทั้งหมด', icon:TILE_ICONS.tickets, grad:'linear-gradient(135deg,rgba(229,240,237,0.9),rgba(255,255,255,0.85))', onclick:"go('tickets')" }));
     tiles.push(mtile({ label:'แจ้งซ่อม', icon:TILE_ICONS.report, grad:'linear-gradient(135deg,rgba(218,236,229,0.9),rgba(255,255,255,0.85))', onclick:"go('report')" }));
     tiles.push(mtile({ label:'QR อุปกรณ์', icon:TILE_ICONS.qr, grad:'linear-gradient(135deg,rgba(247,236,231,0.9),rgba(255,255,255,0.85))', onclick:"go('qr')" }));
-    tiles.push(mtile({ label:'แผนบำรุงรักษา', icon:TILE_ICONS.pm, grad:'linear-gradient(135deg,rgba(250,244,231,0.9),rgba(255,255,255,0.85))', onclick:"go('pm')" }));
     tiles.push(mtile({ label:'ยืม–คืน', icon:TILE_ICONS.loans, grad:'linear-gradient(135deg,rgba(245,239,231,0.9),rgba(255,255,255,0.85))', onclick:"go('loans')" }));
   }
   return '<div class="launcher">'+tiles.join('')+'</div>';
@@ -75,8 +74,6 @@ function viewApp(){
     case 'detail':    body = viewDetail(); break;
     case 'loans':     body = viewLoans(); break;
     case 'qr':        body = viewQr(); break;
-    case 'pm':        body = viewPm(); break;
-    case 'mobile':    body = viewMobile(); break;
     case 'mytickets': body = viewMyTickets(); break;
     case 'scan':      body = viewScanLanding(); break;
     default:          body = viewDashboard();
@@ -97,19 +94,19 @@ function viewApp(){
   +       '<div style="width:46px;height:46px;flex:0 0 auto;border-radius:15px;background:var(--grad-accent);box-shadow:var(--shadow-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--fw-black);font-size:.92rem;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.4),transparent 60%)"></span><span style="position:relative">IT</span></div>'
   +       '<div style="line-height:1.2"><div style="font-weight:var(--fw-bold);font-size:1rem;letter-spacing:var(--tracking-snug)">ระบบแจ้งซ่อม IT</div><div style="font-size:.74rem;color:var(--text-muted)">สอ.กรมวิชาการเกษตร</div></div>'
   +     '</div>'
+  +     '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-md);background:var(--surface-veil);border:1px solid var(--line)">'
+  +       '<div style="width:38px;height:38px;flex:0 0 auto;border-radius:999px;background:var(--grad-tint-pine);border:1px solid rgba(37,102,91,0.18);display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);color:var(--accent-strong)">ก</div>'
+  +       '<div style="line-height:1.25;min-width:0"><div style="font-weight:var(--fw-semibold);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(S.displayName||'เจ้าหน้าที่ IT')+'</div><div style="font-size:.74rem;color:var(--text-muted)">'+esc(ROLE_LABEL[S.role]||'ผู้ใช้งาน')+' • ออนไลน์</div></div>'
+  +     '</div>'
   +     '<nav style="display:flex;flex-direction:column;gap:4px">'
   +       '<div class="nav-head">เมนูหลัก</div>'
   +       navBtn('dashboard','แดชบอร์ด') + navBtn('report','แจ้งซ่อม')
   + (S.role === 'staff' ? navBtn('mytickets','งานซ่อมของฉัน') : navBtn('tickets','รายการงานซ่อม'))
   + navBtn('loans','ยืม–คืนอุปกรณ์')
   +       '<div class="nav-head" style="padding-top:16px">เครื่องมือ</div>'
-  +       navBtn('qr','QR Code อุปกรณ์') + navBtn('pm','แผนบำรุงรักษา (PM)') + navBtn('mobile','สแกนด่วน (มือถือ)')
+  +       navBtn('qr','QR Code อุปกรณ์')
   +     '</nav>'
-  +     '<div style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--radius-md);background:var(--surface-veil);border:1px solid var(--line)">'
-  +       '<div style="width:38px;height:38px;flex:0 0 auto;border-radius:999px;background:var(--grad-tint-pine);border:1px solid rgba(37,102,91,0.18);display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);color:var(--accent-strong)">ก</div>'
-  +       '<div style="line-height:1.25;min-width:0"><div style="font-weight:var(--fw-semibold);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(S.displayName||'เจ้าหน้าที่ IT')+'</div><div style="font-size:.74rem;color:var(--text-muted)">'+esc(ROLE_LABEL[S.role]||'ผู้ใช้งาน')+' • ออนไลน์</div></div>'
-  +       '<button onclick="goHome()" style="margin-left:auto;flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,0.7);border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--text-body);white-space:nowrap">กลับหน้าหลัก</button>'
-  +     '</div>'
+  +     '<button onclick="goHome()" style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1px solid var(--line);background:rgba(255,255,255,0.7);border-radius:var(--radius-md);padding:12px 14px;font-size:.9rem;font-weight:var(--fw-semibold);cursor:pointer;color:var(--text-body)"><span style="font-size:1rem;line-height:1">⌂</span>กลับหน้าหลัก</button>'
   +   '</aside>'
   +   '<main class="content">'
   +     (S.screen === 'dashboard' ? mobileGreeting() : '')

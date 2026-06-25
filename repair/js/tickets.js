@@ -53,10 +53,27 @@ function viewTickets(){
   +     '<button class="btn-ghost" style="padding:10px 20px;font-size:.9rem" onclick="exportCsv()">ส่งออก CSV</button>'
   +   '</div></div>'
   + ticketFilterBar()
-  + '<div class="glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
+  + '<div class="tickets-table glass" style="padding:24px 26px"><div style="overflow-x:auto"><div style="min-width:840px">'
   +   '<div style="display:grid;grid-template-columns:1.2fr 1.9fr 1fr 1.15fr 0.95fr;gap:12px;padding:0 14px 12px;font-size:.78rem;color:var(--text-muted);font-weight:var(--fw-semibold);border-bottom:1px solid var(--line)"><span>หมายเลขงาน</span><span>อุปกรณ์</span><span>ผู้แจ้ง</span><span>ช่างผู้รับผิดชอบ</span><span style="text-align:right">สถานะ</span></div>'
   +   '<div id="ticket-rows">'+ticketRowsHtml()+'</div>'
-  + '</div></div></div></section>';
+  + '</div></div></div>'
+  + '<div class="tickets-cards" id="ticket-cards">'+ticketCardsHtml()+'</div>'
+  + '</section>';
+}
+
+function ticketCardsHtml(){
+  var list = filteredTickets();
+  if (!list.length) return '<div class="glass" style="padding:30px;text-align:center;color:var(--text-muted)">ไม่พบงานที่ตรงกับเงื่อนไข</div>';
+  return list.map(function(t){
+    return '<div class="glass" onclick="openTicket(\''+t.id+'\')" style="padding:14px 16px;border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);cursor:pointer;display:flex;flex-direction:column;gap:8px">'
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">'
+      +   '<span style="font-weight:var(--fw-bold);color:var(--accent-strong);font-size:.9rem">'+esc(t.id)+'</span>'
+      +   '<span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:.74rem;font-weight:var(--fw-bold);background:'+t.bg+';color:'+t.fg+';border:1px solid '+t.bd+';white-space:nowrap"><span style="width:6px;height:6px;border-radius:999px;background:currentColor;opacity:.7"></span>'+esc(t.status)+'</span>'
+      + '</div>'
+      + '<div style="font-weight:var(--fw-semibold);line-height:1.3">'+esc(t.dev)+'</div>'
+      + '<div style="display:flex;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--text-muted)"><span>ผู้แจ้ง: '+esc(t.by)+'</span><span>'+esc(t.tech)+'</span></div>'
+      + '</div>';
+  }).join('');
 }
 
 function ticketRowsHtml(){
@@ -73,6 +90,8 @@ function ticketRowsHtml(){
 function applyTicketSearch(){
   var el = document.getElementById('ticket-rows');
   if (el) el.innerHTML = ticketRowsHtml();
+  var cm = document.getElementById('ticket-cards');
+  if (cm) cm.innerHTML = ticketCardsHtml();
 }
 
 function doCancelTicket(id){

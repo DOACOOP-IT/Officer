@@ -148,6 +148,7 @@ main.content{flex:1;min-width:0;max-width:1360px;padding:24px 36px 40px}
 .bottom-nav{display:none}
 .mobile-greeting{display:none}
 .launcher{display:none}
+.tickets-cards{display:none}
 
 @media (max-width:860px){
   aside.sidebar{position:fixed;left:0;top:0;height:100vh;width:262px;flex:0 0 262px;z-index:80;background:var(--paper-50);transform:translateX(-100%);transition:transform .26s var(--ease)}
@@ -156,9 +157,11 @@ main.content{flex:1;min-width:0;max-width:1360px;padding:24px 36px 40px}
   .mobile-topbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:60;padding:10px 12px;background:var(--surface-strong);border-bottom:1px solid var(--line);box-shadow:var(--shadow-soft)}
   main.content{padding:12px 12px 28px}
   .hide-mobile{display:none !important}
-  .page-header{margin-bottom:14px !important}
-  .page-header h1{font-size:1.4rem !important}
-  .page-header p{font-size:.9rem !important}
+  /* ซ่อนหัวข้อใหญ่บนมือถือ (แถบบนแสดงชื่อหน้าแล้ว) — ยกเว้นหน้าแรกที่ใช้ greeting */
+  .page-header{display:none !important}
+  /* รายการงานซ่อม: ตาราง→การ์ดบนมือถือ */
+  .tickets-table{display:none !important}
+  .tickets-cards{display:flex !important;flex-direction:column;gap:10px}
   .statgrid{grid-template-columns:1fr 1fr !important;gap:12px !important}
   .detailgrid{grid-template-columns:1fr !important;gap:16px !important}
   .detailgrid > div:last-child{position:static !important}
@@ -214,23 +217,23 @@ main.content{flex:1;min-width:0;max-width:1360px;padding:24px 36px 40px}
 <div id="app"></div>
 <div id="toast-el"></div>
 
-<script src="js/config.js?v=9"></script>
-<script src="js/state.js?v=9"></script>
-<script src="js/data.js?v=9"></script>
-<script src="js/helpers.js?v=9"></script>
-<script src="js/auth.js?v=9"></script>
-<script src="js/shell.js?v=9"></script>
-<script src="js/dashboard.js?v=9"></script>
-<script src="js/report.js?v=9"></script>
-<script src="js/tickets.js?v=9"></script>
-<script src="js/loans.js?v=9"></script>
-<script src="js/qr.js?v=9"></script>
-<script src="js/pm.js?v=9"></script>
-<script src="js/mobile.js?v=9"></script>
-<script src="js/alerts.js?v=9"></script>
-<script src="js/mytickets.js?v=9"></script>
-<script src="js/detail-actions.js?v=9"></script>
-<script src="js/scan.js?v=9"></script>
-<script src="js/boot.js?v=9"></script>
+<script src="js/config.js?v=10"></script>
+<script src="js/state.js?v=10"></script>
+<script src="js/data.js?v=10"></script>
+<script src="js/helpers.js?v=10"></script>
+<script src="js/auth.js?v=10"></script>
+<script src="js/shell.js?v=10"></script>
+<script src="js/dashboard.js?v=10"></script>
+<script src="js/report.js?v=10"></script>
+<script src="js/tickets.js?v=10"></script>
+<script src="js/loans.js?v=10"></script>
+<script src="js/qr.js?v=10"></script>
+<script src="js/pm.js?v=10"></script>
+<script src="js/mobile.js?v=10"></script>
+<script src="js/alerts.js?v=10"></script>
+<script src="js/mytickets.js?v=10"></script>
+<script src="js/detail-actions.js?v=10"></script>
+<script src="js/scan.js?v=10"></script>
+<script src="js/boot.js?v=10"></script>
 </body>
 </html>
